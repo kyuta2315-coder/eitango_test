@@ -93,6 +93,29 @@
   .chip.mode.active{background:var(--red);border-color:var(--red);}
   .count-note{font-size:12px;color:var(--ink-soft);margin-top:2px;}
 
+  .chip-checkbox{
+    display:inline-flex;align-items:center;gap:7px;
+    border:1.5px solid var(--rule-strong);
+    background:#fff;
+    padding:6px 14px 6px 10px;
+    border-radius:999px;
+    font-size:13.5px;
+    cursor:pointer;
+    user-select:none;
+    transition:all .15s;
+    font-weight:500;
+    font-family:"Zen Kaku Gothic New",sans-serif;
+    color:var(--ink);
+  }
+  .chip-checkbox:has(input:checked),
+  .chip-checkbox.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .chip-checkbox input[type="checkbox"]{
+    width:16px;height:16px;
+    accent-color:var(--red);
+    cursor:pointer;
+    flex:0 0 auto;
+  }
+
   .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
   button{
     font-family:"Zen Kaku Gothic New",sans-serif;
@@ -220,7 +243,7 @@
 
   .answer-key{display:none;padding:26px 40px 30px;border-top:3px double var(--ink);}
   .answer-key h3{font-size:18px;margin-bottom:14px;}
-  .ak-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 30px;}
+  .ak-grid{display:grid;grid-template-columns:1fr;gap:4px 30px;}
   .ak-item{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px dotted var(--rule);}
   .ak-item .en{font-weight:700;}
   .ak-item .ja{color:var(--ink-soft);}
@@ -1001,14 +1024,14 @@ var ADV_DATA = [
   function renderPosChips(){
     var el = document.getElementById("pos-chips");
     el.innerHTML = POS_LIST.map(function(p){
-      var active = state.selectedPos.has(p);
-      return '<button type="button" class="chip'+(active?' active':'')+'" data-pos="'+p+'">'+p+'</button>';
+      var checked = state.selectedPos.has(p);
+      return '<label class="chip-checkbox'+(checked?' active':'')+'"><input type="checkbox" data-pos="'+p+'"'+(checked?' checked':'')+'>'+p+'</label>';
     }).join("");
-    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
-      chip.addEventListener("click", function(){
-        var p = chip.getAttribute("data-pos");
+    Array.prototype.forEach.call(el.querySelectorAll("input[type=checkbox]"), function(cb){
+      cb.addEventListener("change", function(){
+        var p = cb.getAttribute("data-pos");
         if(state.selectedPos.has(p)){
-          if(state.selectedPos.size>1) state.selectedPos.delete(p);
+          if(state.selectedPos.size>1) state.selectedPos.delete(p); else cb.checked = true;
         } else {
           state.selectedPos.add(p);
         }
@@ -1020,14 +1043,14 @@ var ADV_DATA = [
   function renderGradeChips(){
     var el = document.getElementById("grade-chips");
     el.innerHTML = GRADE_LIST.map(function(g){
-      var active = state.selectedGrade.has(g.id);
-      return '<button type="button" class="chip'+(active?' active':'')+'" data-grade="'+g.id+'">'+g.label+'</button>';
+      var checked = state.selectedGrade.has(g.id);
+      return '<label class="chip-checkbox'+(checked?' active':'')+'"><input type="checkbox" data-grade="'+g.id+'"'+(checked?' checked':'')+'>'+g.label+'</label>';
     }).join("");
-    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
-      chip.addEventListener("click", function(){
-        var g = parseInt(chip.getAttribute("data-grade"), 10);
+    Array.prototype.forEach.call(el.querySelectorAll("input[type=checkbox]"), function(cb){
+      cb.addEventListener("change", function(){
+        var g = parseInt(cb.getAttribute("data-grade"), 10);
         if(state.selectedGrade.has(g)){
-          if(state.selectedGrade.size>1) state.selectedGrade.delete(g);
+          if(state.selectedGrade.size>1) state.selectedGrade.delete(g); else cb.checked = true;
         } else {
           state.selectedGrade.add(g);
         }
@@ -1212,12 +1235,12 @@ var ADV_DATA = [
   function renderIrrColChips(){
     var el = document.getElementById("irr-col-chips");
     el.innerHTML = IRR_COLUMNS.map(function(c){
-      var active = state.irrCols.has(c.key);
-      return '<button type="button" class="chip'+(active?' active':'')+'" data-col="'+c.key+'">'+c.label+'</button>';
+      var checked = state.irrCols.has(c.key);
+      return '<label class="chip-checkbox'+(checked?' active':'')+'"><input type="checkbox" data-col="'+c.key+'"'+(checked?' checked':'')+'>'+c.label+'</label>';
     }).join("");
-    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
-      chip.addEventListener("click", function(){
-        var k = chip.getAttribute("data-col");
+    Array.prototype.forEach.call(el.querySelectorAll("input[type=checkbox]"), function(cb){
+      cb.addEventListener("change", function(){
+        var k = cb.getAttribute("data-col");
         if(state.irrCols.has(k)){
           if(state.irrCols.size>1) state.irrCols.delete(k);
         } else {
@@ -1390,12 +1413,12 @@ var ADV_DATA = [
   function renderListPosChips(){
     var el = document.getElementById("list-pos-chips");
     el.innerHTML = POS_LIST.map(function(p){
-      var active = state.listSelectedPos.has(p);
-      return '<button type="button" class="chip'+(active?' active':'')+'" data-pos="'+p+'">'+p+'</button>';
+      var checked = state.listSelectedPos.has(p);
+      return '<label class="chip-checkbox'+(checked?' active':'')+'"><input type="checkbox" data-pos="'+p+'"'+(checked?' checked':'')+'>'+p+'</label>';
     }).join("");
-    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
-      chip.addEventListener("click", function(){
-        var p = chip.getAttribute("data-pos");
+    Array.prototype.forEach.call(el.querySelectorAll("input[type=checkbox]"), function(cb){
+      cb.addEventListener("change", function(){
+        var p = cb.getAttribute("data-pos");
         if(state.listSelectedPos.has(p)){
           if(state.listSelectedPos.size>1) state.listSelectedPos.delete(p);
         } else {
@@ -1409,12 +1432,12 @@ var ADV_DATA = [
   function renderListGradeChips(){
     var el = document.getElementById("list-grade-chips");
     el.innerHTML = GRADE_LIST.map(function(g){
-      var active = state.listSelectedGrade.has(g.id);
-      return '<button type="button" class="chip'+(active?' active':'')+'" data-grade="'+g.id+'">'+g.label+'</button>';
+      var checked = state.listSelectedGrade.has(g.id);
+      return '<label class="chip-checkbox'+(checked?' active':'')+'"><input type="checkbox" data-grade="'+g.id+'"'+(checked?' checked':'')+'>'+g.label+'</label>';
     }).join("");
-    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
-      chip.addEventListener("click", function(){
-        var g = parseInt(chip.getAttribute("data-grade"), 10);
+    Array.prototype.forEach.call(el.querySelectorAll("input[type=checkbox]"), function(cb){
+      cb.addEventListener("change", function(){
+        var g = parseInt(cb.getAttribute("data-grade"), 10);
         if(state.listSelectedGrade.has(g)){
           if(state.listSelectedGrade.size>1) state.listSelectedGrade.delete(g);
         } else {
