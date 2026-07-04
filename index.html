@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英単語テスト｜中学頻出 動詞・形容詞・形容動詞・副詞</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Yomogi&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF9F3;
+    --paper-alt:#F2ECDF;
+    --ink:#232B33;
+    --ink-soft:#6B7480;
+    --rule:#D9D2C0;
+    --rule-strong:#B9AF95;
+    --red:#B23A2E;
+    --red-soft:#F3DFDA;
+    --green:#3C7A5A;
+    --margin-red:#C1544A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper-alt);
+    color:var(--ink);
+    font-family:"Zen Kaku Gothic New", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Shippori Mincho", serif; margin:0;}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 20px 80px;}
+
+  /* ---------- Hero / App header ---------- */
+  .app-hero{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:22px 26px;
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:14px;
+    margin-bottom:22px;
+  }
+  .app-hero .mark{
+    width:52px;height:52px;flex:0 0 auto;
+    border:2px solid var(--paper);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Yomogi", cursive;
+    font-size:26px;
+    transform:rotate(-8deg);
+    color:#F2D9C9;
+    border-color:#F2D9C9;
+  }
+  .app-hero h1{font-size:22px;letter-spacing:.04em;}
+  .app-hero .sub{
+    display:block;font-family:"Zen Kaku Gothic New",sans-serif;
+    font-size:12.5px;color:#C9CFD6;margin-top:4px;font-weight:500;
+  }
+
+  /* ---------- Control panel ---------- */
+  .panel{
+    background:var(--paper);
+    border:1px solid var(--rule-strong);
+    border-radius:12px;
+    padding:20px 22px;
+    margin-bottom:18px;
+  }
+  .panel h2{font-size:15px;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .panel h2::before{content:"";width:6px;height:6px;background:var(--red);border-radius:50%;display:inline-block;}
+  .row{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start;}
+  .field-group{display:flex;flex-direction:column;gap:8px;}
+  .field-label{font-size:12px;color:var(--ink-soft);font-weight:700;letter-spacing:.04em;}
+  .chip-set{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    border:1.5px solid var(--rule-strong);
+    background:#fff;
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:13.5px;
+    cursor:pointer;
+    user-select:none;
+    transition:all .15s;
+    font-weight:500;
+    font-family:"Zen Kaku Gothic New",sans-serif;
+    color:var(--ink);
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  .chip:focus-visible{outline:2px solid var(--red);outline-offset:2px;}
+  .chip.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .chip.mode.active{background:var(--red);border-color:var(--red);}
+  .count-note{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+  button{
+    font-family:"Zen Kaku Gothic New",sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    border-radius:9px;
+    padding:10px 18px;
+    border:1.5px solid var(--ink);
+    background:#fff;
+    color:var(--ink);
+    cursor:pointer;
+    transition:transform .1s ease;
+  }
+  button:active{transform:scale(.97);}
+  button.primary{background:var(--ink);color:#fff;}
+  button.accent{background:var(--red);border-color:var(--red);color:#fff;}
+  button.ghost{border-color:var(--rule-strong);color:var(--ink-soft);}
+  button:disabled{opacity:.4;cursor:not-allowed;}
+  button.small{padding:5px 11px;font-size:12px;border-radius:7px;}
+
+  /* ---------- custom word manager ---------- */
+  .cw-form{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+  .cw-form input[type=text], .cw-form select{
+    font-family:inherit;font-size:13.5px;
+    padding:8px 10px;border:1.4px solid var(--rule-strong);border-radius:7px;background:#fff;
+  }
+  .cw-form input[type=text]{width:150px;}
+  .cw-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .cw-tag{
+    display:flex;align-items:center;gap:6px;
+    background:var(--paper-alt);border:1px solid var(--rule-strong);
+    border-radius:999px;padding:4px 6px 4px 12px;font-size:12.5px;
+  }
+  .cw-tag button{
+    border:none;background:none;width:18px;height:18px;padding:0;
+    border-radius:50%;color:var(--red);font-size:14px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .cw-empty{font-size:12.5px;color:var(--ink-soft);}
+
+  /* ---------- Test sheet ---------- */
+  .sheet{
+    background:var(--paper);
+    border:1px solid var(--rule-strong);
+    border-radius:12px;
+    padding:0;
+    overflow:hidden;
+  }
+  .sheet-header{
+    position:relative;
+    padding:24px 30px 18px 40px;
+    border-bottom:3px double var(--ink);
+  }
+  .sheet-header::before{
+    content:"";position:absolute;left:22px;top:0;bottom:0;width:2px;background:var(--margin-red);
+  }
+  .sheet-title{font-size:26px;letter-spacing:.06em;}
+  .sheet-title .accent{color:var(--red);}
+  .sheet-meta{
+    display:flex;gap:26px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--ink-soft);
+  }
+  .sheet-meta span{border-bottom:1px solid var(--rule-strong);padding-bottom:2px;min-width:110px;display:inline-block;}
+  .stamp{
+    position:absolute;right:30px;top:20px;
+    width:84px;height:84px;border-radius:50%;
+    border:3px solid var(--red);
+    color:var(--red);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:"Yomogi",cursive;
+    transform:rotate(-10deg);
+    text-align:center;
+    line-height:1.15;
+  }
+  .stamp .num{font-size:22px;font-weight:700;}
+  .stamp .lbl{font-size:11px;}
+
+  .q-list{padding:6px 40px 26px;position:relative;}
+  .q-list::before{
+    content:"";position:absolute;left:22px;top:0;bottom:0;width:2px;background:var(--margin-red);
+  }
+  .q-row{
+    display:grid;
+    grid-template-columns: 24px 72px 160px 1fr 70px;
+    column-gap:12px;
+    align-items:baseline;
+    padding:14px 0;
+    border-bottom:1px dashed var(--rule);
+  }
+  .q-row:last-child{border-bottom:none;}
+  .q-num{
+    font-family:"Shippori Mincho",serif;font-weight:800;
+    font-size:14px;color:var(--ink-soft);width:24px;flex:0 0 auto;
+  }
+  .q-pos{
+    font-size:10.5px;color:#fff;background:var(--ink-soft);
+    padding:2px 6px;border-radius:5px;flex:0 0 auto;letter-spacing:.03em;
+  }
+  .q-prompt{font-size:17px;font-weight:700;min-width:130px;flex:0 0 auto;}
+  .q-prompt.ja{font-family:"Zen Kaku Gothic New",sans-serif;}
+  .q-prompt.en{font-family:"Shippori Mincho",serif;font-style:italic;}
+  .answer-input{
+    flex:1 1 auto;min-width:120px;
+    font-size:15.5px;font-family:"Zen Kaku Gothic New",sans-serif;
+    border:none;border-bottom:1.5px solid var(--rule-strong);
+    background:transparent;padding:4px 4px;color:var(--ink);
+    outline:none;
+  }
+  .answer-input:focus{border-bottom-color:var(--ink);}
+  .answer-input.correct{border-bottom-color:var(--green);}
+  .answer-input.incorrect{border-bottom-color:var(--red);}
+  .q-feedback{
+    font-family:"Yomogi",cursive;color:var(--red);font-size:15px;flex:0 0 auto;
+    min-width:70px;
+  }
+  .empty-state{padding:60px 30px;text-align:center;color:var(--ink-soft);}
+  .empty-state .mark{font-family:"Yomogi",cursive;font-size:34px;color:var(--red);display:block;margin-bottom:10px;}
+
+  .score-banner{
+    display:none;
+    margin:0 40px 20px;padding:12px 16px;
+    background:var(--red-soft);border:1px solid var(--red);
+    border-radius:9px;font-size:14px;color:var(--red);font-weight:700;
+  }
+  .score-banner.show{display:block;}
+
+  .answer-key{display:none;padding:26px 40px 30px;border-top:3px double var(--ink);}
+  .answer-key h3{font-size:18px;margin-bottom:14px;}
+  .ak-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 30px;}
+  .ak-item{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px dotted var(--rule);}
+  .ak-item .en{font-weight:700;}
+  .ak-item .ja{color:var(--ink-soft);}
+
+  .actions-below{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 0;}
+  footer.no-print{text-align:center;color:var(--ink-soft);font-size:11.5px;margin-top:26px;}
+
+  /* ---------- Print ---------- */
+  @media print{
+    body{background:#fff;}
+    .no-print{display:none !important;}
+    .wrap{max-width:100%;padding:0;margin:0;}
+    .sheet{border:none;border-radius:0;line-height:1.2;}
+    .sheet-header{padding:0 8mm 6px 12mm;}
+    .sheet-header::before{width:1.5px;}
+    .sheet-title{font-size:21px;line-height:1.2;}
+    .sheet-meta{margin-top:8px;gap:18px;font-size:11px;line-height:1.2;}
+    .sheet-meta span{min-width:85px;padding-bottom:2px;}
+    .stamp{width:60px;height:60px;right:8mm;top:4mm;border-width:2.5px;}
+    .stamp .num{font-size:19px;line-height:1;}
+    .stamp .lbl{font-size:9px;line-height:1;}
+    .q-list{padding:0 8mm 2px 12mm;}
+    .answer-key{padding:0 8mm 10px 12mm;}
+    body.include-answers .answer-key{display:block;page-break-before:always;}
+    .q-row{
+      display:grid;
+      grid-template-columns: 20px 62px 130px 1fr 50px;
+      column-gap:10px;
+      padding:5.5px 0;
+      border-bottom:1px dotted var(--rule);
+      break-inside:avoid;
+      page-break-inside:avoid;
+      line-height:1.2;
+    }
+    .q-num{font-size:13px;width:18px;line-height:1.2;}
+    .q-pos{font-size:9px;padding:1.5px 6px;letter-spacing:0;line-height:1.3;}
+    .q-prompt{font-size:14px;min-width:110px;line-height:1.2;}
+    .answer-input{font-size:14px;min-width:150px;padding:1px 4px;line-height:1.2;}
+    .answer-input::placeholder{color:transparent;}
+    .q-feedback{font-size:11px;min-width:44px;line-height:1.2;}
+    .score-banner{display:none !important;}
+    .irr-table{font-size:11.5px;}
+    .irr-table thead th{padding:4px 6px;font-size:9px;}
+    .irr-table td{padding:4px 6px;}
+    .irr-table .irr-input{font-size:11.5px;min-width:50px;padding:1px 2px;}
+    .irr-table .irr-input::placeholder{color:transparent;}
+    .irr-table .irr-fb{font-size:9px;}
+    @page{size:A4;margin:10mm 9mm;}
+  }  /* ---------- Tab navigation ---------- */
+  .tab-nav{display:flex;gap:8px;margin-bottom:18px;}
+  .tab-btn{
+    flex:1 1 auto;
+    padding:12px 16px;
+    border-radius:10px;
+    border:1.5px solid var(--rule-strong);
+    background:#fff;
+    color:var(--ink-soft);
+    font-family:"Zen Kaku Gothic New",sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    transition:all .15s;
+  }
+  .tab-btn.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:#fff;
+  }
+
+  /* ---------- Word list table ---------- */
+  .word-table-wrap{max-height:70vh;overflow-y:auto;}
+  .word-table{width:100%;border-collapse:collapse;font-size:14px;}
+  .word-table thead th{
+    position:sticky;top:0;
+    background:var(--ink);color:#fff;
+    text-align:left;padding:10px 14px;
+    font-size:12.5px;letter-spacing:.03em;
+    z-index:1;
+  }
+  .word-table tbody tr{border-bottom:1px solid var(--rule);}
+  .word-table tbody tr:nth-child(even){background:var(--paper-alt);}
+  .word-table td{padding:9px 14px;vertical-align:top;}
+  .word-table td.en{font-family:"Shippori Mincho",serif;font-weight:700;font-style:italic;white-space:nowrap;}
+  .word-table td.pos{white-space:nowrap;}
+  .word-table td.pos span{
+    display:inline-block;font-size:10.5px;color:#fff;background:var(--ink-soft);
+    padding:2px 7px;border-radius:5px;letter-spacing:.02em;
+  }
+  .word-table td.grade{white-space:nowrap;color:var(--ink-soft);font-size:12.5px;}
+  .word-table td.ja{color:var(--ink);}
+
+  /* ---------- Irregular verb table ---------- */
+  .irr-table{width:100%;border-collapse:collapse;font-size:14px;}
+  .irr-table thead th{
+    text-align:left;padding:8px 10px;font-size:11.5px;
+    color:#fff;background:var(--ink);letter-spacing:.02em;
+  }
+  .irr-table tbody tr{border-bottom:1px dashed var(--rule);}
+  .irr-table tbody tr:nth-child(even){background:var(--paper-alt);}
+  .irr-table td{padding:8px 10px;vertical-align:middle;}
+  .irr-table td.base{font-family:"Shippori Mincho",serif;font-weight:800;font-style:italic;white-space:nowrap;}
+  .irr-table td.given{color:var(--ink-soft);}
+  .irr-table .irr-input{
+    width:100%;min-width:70px;
+    font-size:14px;font-family:"Zen Kaku Gothic New",sans-serif;
+    border:none;border-bottom:1.5px solid var(--rule-strong);
+    background:transparent;padding:3px 2px;color:var(--ink);outline:none;
+  }
+  .irr-table .irr-input:focus{border-bottom-color:var(--ink);}
+  .irr-table .irr-input.correct{border-bottom-color:var(--green);}
+  .irr-table .irr-input.incorrect{border-bottom-color:var(--red);}
+  .irr-table .irr-fb{display:block;font-family:"Yomogi",cursive;color:var(--red);font-size:11.5px;margin-top:2px;}
+  #irr-ak-table-wrap table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  #irr-ak-table-wrap th{text-align:left;padding:6px 8px;background:var(--ink);color:#fff;font-size:10.5px;}
+  #irr-ak-table-wrap td{padding:5px 8px;border-bottom:1px dotted var(--rule);}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="app-hero no-print">
+    <div class="mark">単</div>
+    <div>
+      <h1>英単語テスト<br><span class="sub">中学頻出の動詞・形容詞・形容動詞・副詞 / 毎回ランダムに出題</span></h1>
+    </div>
+  </header>
+
+  <div class="tab-nav no-print">
+    <button class="tab-btn active" data-view="test">📝 小テストを作成</button>
+    <button class="tab-btn" data-view="irregular">🔄 不規則動詞テスト</button>
+    <button class="tab-btn" data-view="list">📖 単語一覧・学習</button>
+  </div>
+
+  <div id="view-test">
+  <section class="panel no-print">
+    <h2>出題設定</h2>
+    <div class="row">
+      <div class="field-group">
+        <div class="field-label">出題形式</div>
+        <div class="chip-set" id="mode-chips"></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">出題する品詞</div>
+        <div class="chip-set" id="pos-chips"></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">出題する学年</div>
+        <div class="chip-set" id="grade-chips"></div>
+        </div>
+      <div class="field-group">
+        <div class="field-label">問題数</div>
+        <input type="number" id="quiz-count" value="15" min="1" max="734" style="width:80px;font-size:14px;padding:8px 10px;border:1.4px solid var(--rule-strong);border-radius:7px;font-family:inherit;">
+      </div>
+    </div>
+    <div class="count-note" id="pool-count" style="margin-top:10px;"></div>
+    <div class="btn-row">
+      <button class="primary" id="btn-generate">テストを作成する</button>
+      <button class="accent" id="btn-grade" disabled>採点する</button>
+      <button class="ghost" id="btn-clear" disabled>解答をやり直す</button>
+      <label class="chip" style="display:flex;align-items:center;gap:6px;" id="answers-toggle-wrap">
+        <input type="checkbox" id="answers-toggle"> 印刷時に解答一覧を含める
+      </label>
+      <button class="ghost" id="btn-print" disabled>この問題を印刷する</button>
+    </div>
+  </section>
+
+  <section class="panel no-print">
+    <h2>単語を追加する</h2>
+    <div class="cw-form">
+      <input type="text" id="cw-en" placeholder="英単語 (例: friendly)">
+      <select id="cw-pos">
+        <option value="動詞">動詞</option>
+        <option value="形容詞">形容詞</option>
+        <option value="形容動詞">形容動詞</option>
+        <option value="副詞">副詞</option>
+      </select>
+      <select id="cw-grade">
+        <option value="1">中学1年</option>
+        <option value="2">中学2年</option>
+        <option value="3">中学3年</option>
+      </select>
+      <input type="text" id="cw-ja" placeholder="日本語の意味 (例: 友好的な)">
+      <button class="primary small" id="btn-add-word">追加する</button>
+    </div>
+    <div class="cw-list" id="cw-list"></div>
+  </section>
+
+  <section class="sheet" id="sheet">
+    <div class="sheet-header" id="sheet-header" style="display:none;">
+      <h2 class="sheet-title">英単語<span class="accent">テスト</span></h2>
+      <div class="sheet-meta">
+        <span>名前：　　　　　　　　　　　　　</span>
+      </div>
+      <div class="stamp" id="stamp" style="display:none;">
+        <div class="num" id="stamp-num">-</div>
+        <div class="lbl">/ 30</div>
+      </div>
+    </div>
+    <div class="score-banner" id="score-banner"></div>
+    <div class="q-list" id="q-list">
+      <div class="empty-state">
+        <span class="mark">✎</span>
+        「テストを作成する」ボタンを押すと、ここに問題が表示されます。
+      </div>
+    </div>
+    <div class="answer-key" id="answer-key">
+      <h3>解答一覧</h3>
+      <div class="ak-grid" id="ak-grid"></div>
+    </div>
+  </section>
+  </div>
+
+  <div id="view-list" style="display:none;">
+    <section class="panel no-print">
+      <h2>単語一覧（学習用）</h2>
+      <div class="row">
+        <div class="field-group" style="flex:1 1 260px;">
+          <div class="field-label">検索（英単語・日本語）</div>
+          <input type="text" id="word-search" placeholder="例: run / 走る" style="width:100%;font-size:14px;padding:9px 12px;border:1.4px solid var(--rule-strong);border-radius:8px;font-family:inherit;">
+        </div>
+        <div class="field-group">
+          <div class="field-label">品詞</div>
+          <div class="chip-set" id="list-pos-chips"></div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">学年</div>
+          <div class="chip-set" id="list-grade-chips"></div>
+        </div>
+      </div>
+      <div class="count-note" id="list-count" style="margin-top:10px;"></div>
+    </section>
+    <section class="panel no-print" style="padding:0;overflow:hidden;">
+      <div class="word-table-wrap">
+        <table class="word-table">
+          <thead>
+            <tr><th>英単語</th><th>品詞</th><th>学年</th><th>日本語の意味</th></tr>
+          </thead>
+          <tbody id="word-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div id="view-irregular" style="display:none;">
+    <section class="panel no-print">
+      <h2>不規則動詞テストの設定</h2>
+      <div class="row">
+        <div class="field-group">
+          <div class="field-label">出題数</div>
+          <div class="chip-set" id="irr-count-chips"></div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">空欄にする項目（原形は常に表示）</div>
+          <div class="chip-set" id="irr-col-chips"></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="primary" id="btn-irr-generate">テストを作成する</button>
+        <button class="accent" id="btn-irr-grade" disabled>採点する</button>
+        <button class="ghost" id="btn-irr-clear" disabled>解答をやり直す</button>
+        <label class="chip" style="display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" id="irr-answers-toggle"> 印刷時に解答一覧を含める
+        </label>
+        <button class="ghost" id="btn-irr-print" disabled>この問題を印刷する</button>
+        <button class="ghost" id="btn-irr-study">学習用一覧を表示（辞書順・全70語）</button>
+      </div>
+    </section>
+
+    <section class="sheet" id="irr-sheet">
+      <div class="sheet-header" id="irr-sheet-header" style="display:none;">
+        <h2 class="sheet-title" id="irr-sheet-title">不規則動詞<span class="accent">テスト</span></h2>
+        <div class="sheet-meta">
+          <span>名前：　　　　　　　　　　　　　</span>
+        </div>
+        <div class="stamp" id="irr-stamp" style="display:none;">
+          <div class="num" id="irr-stamp-num">-</div>
+          <div class="lbl">/ -</div>
+        </div>
+      </div>
+      <div class="score-banner" id="irr-score-banner"></div>
+      <div style="overflow-x:auto;">
+        <table class="irr-table" id="irr-table">
+          <thead>
+            <tr id="irr-table-head"></tr>
+          </thead>
+          <tbody id="irr-table-body">
+            <tr><td colspan="7">
+              <div class="empty-state"><span class="mark">✎</span>「テストを作成する」ボタンを押すと、ここに問題が表示されます。</div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="answer-key" id="irr-answer-key">
+        <h3>解答一覧</h3>
+        <div id="irr-ak-table-wrap"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="no-print">画面で解答して自動採点、または印刷して手書きでも演習できます。</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= 単語データ ================= */
+  var VERB_DATA = [
+    ["am","です/ます/にいる",1],["answer","に答える",1],["are","です/ます/にいる",1],
+    ["arrive","到着する",1],["be","である/になる/ある",1],["begin","を始める/始まる",1],
+    ["camp","キャンプする",1],["can","することがあり得る/～できる",1],["climb","を登る/登る",1],
+    ["come","来る/になる",1],["cook","料理する",1],["count","数える",1],
+    ["do","をする/行う/暮らす",1],["drink","を飲む",1],["eat","を食べる/食事をする",1],
+    ["enjoy","を楽しむ",1],["fish","魚釣りをする",1],["get","を得る/になる/着く",1],
+    ["go","行く",1],["go out","外出する",1],["hate","大嫌いである",1],
+    ["have","を持っている/を食べる/飲む",1],["help","を手伝う/助ける/手伝う",1],["is","です/ます/にいる",1],
+    ["jump","跳ぶ",1],["know","を知っている",1],["laugh","笑う",1],
+    ["learn","学ぶ/習う",1],["leave","去る/を置いていく",1],["let's","～しよう",1],
+    ["listen","聞く/聴く",1],["live","住む/生きる",1],["look","見る/に見える",1],
+    ["make","を作る/を～の状態にする",1],["meet","と会う",1],["need","を必要とする",1],
+    ["open","を開ける",1],["plant","植える",1],["play","を演奏する/を演じる",1],
+    ["practice","を練習する/練習する",1],["put","を置く/置く",1],["read","を読む",1],
+    ["ride","乗る",1],["run","走る/を主催する",1],["say","を言う/と書いてある",1],
+    ["see","を見る/が分かる/に会う",1],["shop","買い物をする",1],["should","すべきである",1],
+    ["show","を見せる",1],["sing","を歌う",1],["sit","座る",1],
+    ["skate","スケートをする",1],["sleep","眠る/寝ている",1],["smile","ほほえむ/笑う",1],
+    ["speak","を話す",1],["stand","立つ/をがまんする",1],["stay","滞在する",1],
+    ["stop","止める/とまる/停止する",1],["study","を勉強する",1],["surf","波乗りをする",1],
+    ["swim","泳ぐ",1],["take","を撮る/に乗る/連れて行く",1],["talk","話す",1],
+    ["teach","教える",1],["tell","に話す/伝える",1],["thank","に感謝する",1],
+    ["think","考える",1],["travel","旅行する",1],["try","を試す",1],
+    ["understand","を理解する/理解する",1],["use","使う",1],["wait","待つ",1],
+    ["want","欲しい",1],["welcome","歓迎する",1],["accept","を受け入れる",2],
+    ["act","演じる",2],["add","加える",2],["agree","賛成する",2],
+    ["agree with","に賛成する",2],["apologize","謝る",2],["appear","現れる",2],
+    ["arrive at","に到着する",2],["ask","をたのむ",2],["bake","焼く",2],
+    ["be interested in","に興味がある",2],["believe","信じる",2],["bend","曲げる",2],
+    ["blow","吹く",2],["boil","ゆでる/煮る",2],["born","生まれる",2],
+    ["borrow","を借りる/借りる",2],["break","壊れる/破る",2],["bring","持って来る",2],
+    ["brush","をみがく",2],["build","を建てる",2],["burn","を燃やす",2],
+    ["buy","を買う",2],["call","に電話をかける",2],["call back","折り返し電話する",2],
+    ["care","気にする",2],["carry","を運ぶ",2],["catch","を捕まえる",2],
+    ["celebrate","祝う",2],["change","変わる/を変える",2],["change trains","電車を乗りかえる",2],
+    ["check","を調べる",2],["cheer","応援する",2],["choose","を選ぶ/選ぶ",2],
+    ["clap","拍手する",2],["close","閉じる/を閉じる/終える",2],["collect","を集める",2],
+    ["come from","出身である",2],["connect","を結びつける/つながる",2],["continue","を続ける/続く",2],
+    ["cost","費用がかかる",2],["cover","覆う",2],["create","を創造する",2],
+    ["cry","泣く",2],["cut","切る/を切る",2],["decide","を決める",2],
+    ["deliver","配達する",2],["depend","頼る",2],["depend on","に頼る",2],
+    ["die","死ぬ",2],["disappear","姿を消す/消滅する",2],["discover","発見する/を発見する",2],
+    ["dislike","嫌う",2],["display","展示する",2],["do well","元気になる",2],
+    ["draw","描く/引く",2],["drive","運転する",2],["drop","を落とす/落ちる",2],
+    ["dry","乾く",2],["eat out","外食する",2],["end","終わる",2],
+    ["enter","入る",2],["excuse","を許す/許す",2],["experience","を経験する",2],
+    ["fail","失敗する",2],["fall","転ぶ/転倒する/落ちる",2],["fall down","倒れる",2],
+    ["feed","えさを与える",2],["feel","と感じる/感じる",2],["feel like ~ing","したい気がする",2],
+    ["fight","たたかう",2],["find","を発見する",2],["finish","を終える",2],
+    ["fit","(サイズが)合う",2],["fly","飛ぶ",2],["follow","に従う",2],
+    ["forget","を忘れる/忘れる",2],["gather","を集める",2],["get out","外へ出る",2],
+    ["give","を与える/渡す",2],["go back","帰る/戻る",2],["go by","通り過ぎる",2],
+    ["go on","する/始める/時間が過ぎ去る",2],["greet","挨拶する",2],["grow","成長する",2],
+    ["guess","を推測する",2],["guide","を案内する",2],["hand","を手渡す",2],
+    ["happen","起こる",2],["head","向かう",2],["hear","聞く/を聞く",2],
+    ["hear of","について聞く",2],["heat","熱する",2],["hit","打つ",2],
+    ["hold","をつかむ/を開く/行う",2],["hope","を望む/望む",2],["hope to","したいと願う",2],
+    ["hurry","急ぐ",2],["imagine","想像する/を想像する",2],["improve","を改善する/進歩する",2],
+    ["interested in","興味をもっている",2],["introduce","を紹介する/紹介する",2],["invent","を発明する",2],
+    ["invite","を招待する",2],["join","に参加する/参加する",2],["keep","し続ける/を保つ",2],
+    ["kill","を殺す",2],["land","着陸する",2],["lend","貸す",2],
+    ["let","～に～をさせる",2],["lie","横たわる",2],["lift","持ち上げる",2],
+    ["lose","負ける/を失う",2],["mark","印をつける",2],["marry","結婚する",2],
+    ["mean","を意味する/意味する",2],["melt","溶ける",2],["mistake","間違える",2],
+    ["mix","混ぜる",2],["move","を動かす/動く/引っ越す",2],["nod","うなずく",2],
+    ["paint","描く",2],["pass","を通り過ぎる/を手渡す",2],["pass by","通り過ぎる",2],
+    ["pay","払う",2],["perform","演じる",2],["photograph","写真を撮る",2],
+    ["pick","を摘む/選ぶ",2],["plan","を計画する",2],["please","気に入る/喜ばせる",2],
+    ["pour","注ぐ",2],["praise","ほめる",2],["prefer","の方を好む",2],
+    ["prepare","準備する",2],["promise","約束する",2],["protect","を守る/保護する",2],
+    ["pull","を引く",2],["push","を押す",2],["quit","やめる",2],
+    ["remain","残る",2],["remember","を思い出す",2],["remove","を取り除く",2],
+    ["rest","休む/眠る",2],["reuse","再利用する",2],["run away","逃げる",2],
+    ["rush","急いで行く",2],["save","を節約する/を救う",2],["score","得点する",2],
+    ["search","探す",2],["seem","～のように思われる/～の様に見える",2],["sell","を売る",2],
+    ["send","を送る",2],["set","置く",2],["shake","震える",2],
+    ["share","を共有する",2],["shock","驚かせる",2],["shoot","撃つ",2],
+    ["shout","叫ぶ",2],["spell","をつづる",2],["spend","を過ごす/費やす",2],
+    ["stand up","立ち上がる",2],["step","歩む",2],["support","を支援する/応援する",2],
+    ["take a look","ちらりと見る",2],["take care of","を大事にする",2],["taste","の味がする",2],
+    ["throw","投げる",2],["tie","結ぶ",2],["train","訓練する",2],
+    ["trust","を信用する",2],["turn","向く/曲がる",2],["wake","目が覚める",2],
+    ["wake up","目を覚ます",2],["wear","着る/を着ている",2],["whisper","ささやく",2],
+    ["wish","望む/を望む",2],["work out","運動する",2],["worry","心配させる",2],
+    ["wrap","を包む",2],["advise","助言する",3],["affect","に影響を与える",3],
+    ["amaze","をびっくりさせる",3],["announce","を発表する",3],["arrest","を逮捕する",3],
+    ["attend","に通う/に出席する",3],["awake","目が覚める",3],["ban","を禁止する",3],
+    ["base","基礎とする",3],["be about to","今にもしようとしている",3],["be amazed at","に驚かされる",3],
+    ["be different from","とはちがっている",3],["be in danger of","の危険にさらされている",3],["be satisfied with","に満足する",3],
+    ["begin to","し始める",3],["belong","のものである",3],["blush","赤面する",3],
+    ["bother","悩ます",3],["breed","を飼育する/繁殖する",3],["broaden","広げる",3],
+    ["capture","を捕まえる",3],["charge","を充電する",3],["check out","を調査する",3],
+    ["circle","を丸で囲む",3],["communicate","連絡する",3],["complain","不平を言う",3],
+    ["contact","と連絡をとる",3],["control","を管理する",3],["cross","を横切る/渡る",3],
+    ["damage","に損害を与える",3],["decide to","しようと決心する",3],["decrease","減少する",3],
+    ["design","を設計する",3],["despair","絶望する",3],["destroy","を破壊する",3],
+    ["develop","を発達させる",3],["die out","絶滅する",3],["discuss","話し合う",3],
+    ["do one's best","最善をつくす",3],["donate","を寄付する",3],["drop out","中退する",3],
+    ["earn","をかせぐ",3],["embarrass","当惑させる",3],["encourage","を勇気づける",3],
+    ["encourage to ～","に～するように促す",3],["establish","を設立する",3],["exercise","練習する",3],
+    ["explain","を説明する/説明する",3],["extend","を広げる",3],["face","に直面する",3],
+    ["fade","消えていく",3],["faint","気を失う",3],["fascinate","魅了する",3],
+    ["feel free to","遠慮なくする",3],["fill","いっぱいにする",3],["fire","を首にする/解雇する",3],
+    ["focus","集中する",3],["fold","を折る/折りたたむ",3],["form","形作る",3],
+    ["get fired","解雇される",3],["get over","を乗りこえる",3],["go through","人生を送る",3],
+    ["graduate","卒業する",3],["grin","にっこり笑う",3],["hand out","を配る",3],
+    ["handle","を処理する",3],["heal","治す",3],["hunt","を狩る",3],
+    ["hurt","を傷つける/傷つける",3],["import","を輸入する",3],["impress","感動させる",3],
+    ["include","を含む",3],["increase","を増やす/増大させる",3],["influence","に影響を及ぼす",3],
+    ["injure","を傷つける",3],["knit","編む",3],["lead","を導く",3],
+    ["locate","位置を特定する",3],["look forward to ...","を楽しみに待つ",3],["make all the difference","大きなちがいを生む",3],
+    ["manage","管理する",3],["measure","をはかる",3],["miss","さびしく思う/を見逃す",3],
+    ["misunderstand","を誤解する",3],["observe","観察する",3],["order","注文する",3],
+    ["organize","組織する",3],["overcome","乗り越える",3],["panic","うろたえる",3],
+    ["pardon","許す",3],["preserve","を保存する",3],["print","を印刷する",3],
+    ["produce","を生産する",3],["protest","抗議する",3],["punish","罰する",3],
+    ["pursue","を追い求める",3],["raise","手などを挙げる",3],["reach","に着く/到着する",3],
+    ["realize","だと気づく/実現する",3],["receive","を受け取る",3],["recognize","だと分かる",3],
+    ["reduce","減らす",3],["relate","を～に関係させる",3],["relate to ～","を～に関係させる",3],
+    ["release","を放出する",3],["remind","を気づかせる",3],["research","を研究する",3],
+    ["respect","を尊敬する",3],["return","帰る/戻る",3],["rhyme","韻をふむ",3],
+    ["rise","のぼる/上がる/上昇する",3],["row","こぐ",3],["rule","支配する",3],
+    ["run out of","を使い果たす",3],["satisfy","を満足させる",3],["scold","叱る",3],
+    ["select","を選ぶ",3],["separate","分ける",3],["sigh","ため息をつく",3],
+    ["sink","沈む",3],["smell","においがする",3],["solve","を解決する",3],
+    ["sort","分類する",3],["sound","に聞こえる",3],["stick","突き刺す",3],
+    ["store","を蓄える",3],["strike","打つ",3],["strive","懸命に努力する",3],
+    ["succeed","成功する",3],["suffer","苦しむ",3],["supply","供給する",3],
+    ["surround","を囲む",3],["survey","調査する",3],["survive","生き残る",3],
+    ["tell to ～","に～するように言う",3],["too to ～","～するにはすぎる",3],["touch","にさわる",3],
+    ["translate","翻訳する",3],["transport","を輸送する",3],["turn into","に変わる",3],
+    ["weigh","重さがある",3],["wonder","～かなと思う/不思議に思う",3]
+  ];
+
+var IADJ_DATA = [
+    ["bad","悪い",1],["beautiful","美しい",1],["best","最も良い",1],
+    ["big","大きい",1],["black","黒い",1],["blue","青い",1],
+    ["busy","忙しい",1],["cold","冷たい/寒い",1],["difficult","難しい",1],
+    ["fast","速い",1],["fun","楽しい/面白い",1],["good","良い",1],
+    ["great","すばらしい",1],["hot","暑い",1],["interesting","興味深い/面白い",1],
+    ["little","小さい/かわいい/ほとんど～ない",1],["long","長い",1],["new","新しい",1],
+    ["nice","良い",1],["old","古い/年をとった",1],["poor","貧しい",1],
+    ["right","正しい",1],["short","短い",1],["small","小さい",1],
+    ["young","若い",1],["awesome","すばらしい",2],["better","より良い",2],
+    ["bitter","苦い",2],["bright","明るい",2],["careful","注意深い",2],
+    ["cheap","安い",2],["cool","かっこいい",2],["curious","好奇心の強い",2],
+    ["deep","深い",2],["fantastic","すばらしい",2],["glad","うれしい",2],
+    ["heavy","重い",2],["large","大きい/広い",2],["light","軽い",2],
+    ["loud","声の大きい",2],["low","低い",2],["narrow","狭い",2],
+    ["pretty","かわいい/きれいな",2],["round","丸い",2],["sad","悲しい",2],
+    ["scary","恐ろしい",2],["soft","やわらかい",2],["strong","強い",2],
+    ["sweet","甘い/易しい",2],["tall","背が高い",2],["terrible","ひどい",2],
+    ["thick","厚い",2],["weak","弱い/かすかな",2],["wide","幅が広い/幅の広い",2],
+    ["blind","目の見えない",3],["cute","かわいい",3],["delicious","おいしい",3],
+    ["gentle","やさしい",3],["illiterate","読み書きのできない",3],["lonely","さびしい",3],
+    ["lovely","美しい",3],["noisy","騒がしい",3],["populous","人口の多い",3],
+    ["quick","速い",3],["severe","厳しい",3],["sleepy","眠い",3],
+    ["strict","厳しい",3],["uncomfortable","心地の悪い",3],["wise","賢い",3]
+  ];
+
+var NADJ_DATA = [
+    ["all","全ての",1],["angry","怒った/腹を立てた",1],["brown","茶色の",1],
+    ["clean","きれいな/清潔な",1],["cloudy","曇った",1],["different","色々な/違った",1],
+    ["easy","簡単な",1],["famous","有名な",1],["favorite","好きな/お気に入りの",1],
+    ["fine","元気な/晴れた",1],["hungry","空腹の/飢えた",1],["Japanese","日本の",1],
+    ["last","最後の",1],["many","たくさんの",1],["popular","人気のある",1],
+    ["quiet","静かな",1],["rainy","雨降りの",1],["ready","用意ができている",1],
+    ["some","いくつかの",1],["sunny","晴れた",1],["surprised","驚いた",1],
+    ["warm","温暖な",1],["wet","濡れている",1],["bored","退屈した",2],
+    ["central","中心の",2],["certain","確かな",2],["clever","利口な",2],
+    ["common","共通の",2],["convenient","便利な",2],["crazy","気の狂った",2],
+    ["creative","創造力のある",2],["dangerous","危険な",2],["disabled","体の不自由な",2],
+    ["enough","十分な/必要なだけの",2],["excited","わくわくした/興奮した",2],["exciting","わくわくさせる",2],
+    ["expensive","高価な/費用のかかる",2],["extra","余分の",2],["few","少しの",2],
+    ["final","最後の",2],["foolish","愚かな",2],["foreign","外国の",2],
+    ["free","ひまな/自由な",2],["friendly","好意的な",2],["full","完全な/完ぺきな/最適な",2],
+    ["general","一般的な",2],["happy","幸せな/うれしい/楽しい",2],["helpful","役に立つ",2],
+    ["honest","正直な",2],["hopeful","希望を持っている",2],["human","人間の",2],
+    ["important","重要な/大切な",2],["junior","年下の",2],["kind","親切な",2],
+    ["latest","最新の",2],["local","地方の/地元の",2],["lucky","幸運な",2],
+    ["medium","中ほどの",2],["mini","小型の",2],["most","たいていの/大部分の",2],
+    ["musical","音楽の",2],["necessary","必要な",2],["ordinary","ふつうの",2],
+    ["past","過去の",2],["perfect","完全な",2],["personal","個人の",2],
+    ["playful","楽しげな",2],["positive","前向きな",2],["possible","可能な",2],
+    ["precious","貴重な",2],["prepared","用意ができている",2],["present","出席している",2],
+    ["real","本当の",2],["rich","金持ちの",2],["serious","重大な",2],
+    ["shy","恥ずかしがりの",2],["sick","病気の",2],["similar","同じような",2],
+    ["snowy","雪の降る",2],["square","正方形の",2],["strange","奇妙な",2],
+    ["successful","成功した",2],["tiny","ごく小さな/小さな",2],["tired","疲れた",2],
+    ["traditional","伝統的な",2],["unique","独特な",2],["useful","役に立つ",2],
+    ["various","いろいろな",2],["well-known","有名な",2],["whole","すべての",2],
+    ["wild","野生の",2],["absent","欠席の",3],["ancient","古代の",3],
+    ["artistic","芸術的な",3],["brave","勇敢な",3],["chemical","化学の",3],
+    ["cultural","文化の",3],["daily","日常の",3],["domestic","国内の",3],
+    ["effective","効果的な",3],["elderly","年配の",3],["electronic","電子の",3],
+    ["endangered","絶滅の危機にさらされている",3],["fat","太った",3],["flat","平らな",3],
+    ["fresh","新鮮な",3],["functional","実用的な",3],["funny","おかしな",3],
+    ["grand","壮大な",3],["healthy","健康な",3],["holy","神聖な",3],
+    ["illegal","違法な",3],["inner","内部の/内側の",3],["interdependent","相互に依存している",3],
+    ["international","国際的な",3],["limited","限られた",3],["modern","現代的な",3],
+    ["negative","否定的な/良くない",3],["nuclear","核の/原子力の",3],["paid","支払い済みの",3],
+    ["pale","青ざめた",3],["peaceful","平和な",3],["physical","身体の",3],
+    ["raw","生の",3],["religious","宗教の",3],["renewable","再生可能な",3],
+    ["sacred","神聖な",3],["seasonal","季節の",3],["senior","年上の/上級の",3],
+    ["silent","静かな",3],["simple","単純な/簡単な",3],["specific","特定の",3],
+    ["stylish","おしゃれな",3],["sustainable","存続可能な",3],["tough","困難な/難しい",3],
+    ["unfair","不公平な/不当な",3],["unhappy","不幸な",3],["unused","未使用の",3],
+    ["well-off","裕福な",3],["wrong","間違った",3]
+  ];
+
+var ADV_DATA = [
+    ["again","もう一度/再び/また",1],["ago","～の前に",1],["almost","ほとんど",1],
+    ["alone","独りで",1],["also","もまた/さらに",1],["always","いつも",1],
+    ["back","戻って/返して/裏の",1],["down","下に/に沿って",1],["early","早く",1],
+    ["everyday","毎日",1],["far","遠くに",1],["hard","熱心に/一生懸命に",1],
+    ["here","ここに",1],["just","ちょうど/まさに/たった今",1],["maybe","たぶん/もしかすると",1],
+    ["much","おおいに/たいへん",1],["north","北へ",1],["often","よく",1],
+    ["only","～だけ",1],["out","外に",1],["outside","外で/の外側に",1],
+    ["really","本当に/実際に",1],["sometimes","ときどき",1],["soon","すぐに",1],
+    ["still","まだ",1],["then","そのとき/そうすると",1],["there","そこに",1],
+    ["today","今日/現在",1],["together","一緒に",1],["tomorrow","明日",1],
+    ["too","もまた/～すぎる",1],["up","上へ",1],["usually","普段/ふつう",1],
+    ["very","非常に",1],["well","上手に",1],["when","いつ",1],
+    ["yesterday","昨日",1],["above","上に/上記の",2],["abroad","外国に/海外に/外国へ",2],
+    ["actually","実は/本当は",2],["already","すでに/もう",2],["anytime","いつでも",2],
+    ["anyway","ともかく",2],["at night","夜に",2],["away","はなれて/去って/なくなって",2],
+    ["below","下に/下記の",2],["beside","の側に",2],["calmly","落ち着いて",2],
+    ["cheerfully","元気よく",2],["clearly","はっきりと",2],["closely","近くに",2],
+    ["deeply","深く",2],["differently","異なって",2],["easily","簡単に",2],
+    ["else","その他に",2],["especially","特に/とりわけ",2],["even","でさえ/～さえ",2],
+    ["forward","前方に",2],["generally","一般的に",2],["gently","やさしく",2],
+    ["in front of","の前に",2],["in the future","将来に",2],["in the middle of","の真ん中に",2],
+    ["indoors","屋内で",2],["inside","内側の",2],["instead","そのかわりに",2],
+    ["instead of","のかわりに",2],["less","少なく",2],["little by little","少しずつ",2],
+    ["long ago","ずっと前に",2],["near","の近くで/近くで",2],["nightly","毎晩",2],
+    ["normally","通常は",2],["one by one","1つずつ",2],["over","の向こう側に",2],
+    ["over here","こちらに",2],["overseas","海外の/外国へ",2],["perfectly","完全に",2],
+    ["perhaps","多分",2],["probably","多分",2],["quickly","すぐに/素早く",2],
+    ["right away","すぐに",2],["safely","安全に",2],["second","2 番目に",2],
+    ["slowly","ゆっくりと/遅く",2],["somewhere","どこかに",2],["straight","真っすぐに",2],
+    ["strongly","強く",2],["suddenly","突然に",2],["truly","本当に",2],
+    ["yet","まだ/もう/すでに",2],["ahead","前方に",3],["all the time","常に",3],
+    ["anymore","もはや",3],["besides","そのうえ/さらに",3],["beyond","をこえたところに",3],
+    ["carefully","注意深く",3],["certainly","承知しました/確かに",3],["definitely","もちろん/確かに",3],
+    ["directly","直接に",3],["effectively","効果的に",3],["eventually","最後には",3],
+    ["ever","今まで/かつて",3],["everywhere","どこでも",3],["finally","ついに/やっと",3],
+    ["fortunately","幸運にも",3],["freely","自由に",3],["frequently","頻繁に",3],
+    ["happily","幸せに/楽しく",3],["hourly","毎時",3],["however","しかしながら/けれども/しかし",3],
+    ["incredibly","信じられないほど",3],["indeed","実に",3],["moreover","さらに",3],
+    ["never","今までに一度もしない/決してない",3],["occasionally","たまに",3],["originally","はじめは",3],
+    ["precisely","正確に",3],["quarterly","四半期ごとに",3],["quietly","静かに/落ち着いて",3],
+    ["quite","かなり/相当",3],["rapidly","速く/急速に",3],["rarely","めったに〜ない",3],
+    ["recently","最近",3],["relatively","比較的",3],["seldom","めったに〜ない",3],
+    ["surely","確かに",3],["surprisingly","驚いたことには",3],["this way","このように",3],
+    ["tightly","しっかりと",3]
+  ];
+
+  function buildBank(data, pos, prefix){
+    return data.map(function(d,i){ return {id:prefix+"-"+i, en:d[0], ja:d[1], pos:pos, grade:d[2], custom:false}; });
+  }
+
+  var BUILTIN_BANK = []
+    .concat(buildBank(VERB_DATA,"動詞","v"))
+    .concat(buildBank(IADJ_DATA,"形容詞","i"))
+    .concat(buildBank(NADJ_DATA,"形容動詞","n"))
+    .concat(buildBank(ADV_DATA,"副詞","a"));
+
+  var POS_LIST = ["動詞","形容詞","形容動詞","副詞"];
+  var GRADE_LIST = [{id:1,label:"中学1年"},{id:2,label:"中学2年"},{id:3,label:"中学3年"}];
+  var MODE_LIST = [
+    {id:"en2ja", label:"英語→日本語"},
+    {id:"ja2en", label:"日本語→英語"},
+    {id:"mix", label:"ミックス"}
+  ];
+
+  /* ================= 不規則動詞データ ================= */
+  /* [原形, 三人称単数形, ing形, 過去形, 過去分詞, 意味] */
+  var IRREGULAR_VERB_DATA = [
+    ["teach","teaches","teaching","taught","taught","教える"],
+    ["cut","cuts","cutting","cut","cut","切る"],
+    ["hit","hits","hitting","hit","hit","打つ"],
+    ["put","puts","putting","put","put","置く"],
+    ["win","wins","winning","won","won","勝つ"],
+    ["become","becomes","becoming","became","become","~になる"],
+    ["come","comes","coming","came","come","来る"],
+    ["run","runs","running","ran","run","走る"],
+    ["begin","begins","beginning","began","begun","始める"],
+    ["bring","brings","bringing","brought","brought","持ってくる"],
+    ["build","builds","building","built","built","建てる"],
+    ["buy","buys","buying","bought","bought","買う"],
+    ["catch","catches","catching","caught","caught","捕らえる"],
+    ["feel","feels","feeling","felt","felt","感じる"],
+    ["find","finds","finding","found","found","見つける"],
+    ["fight","fights","fighting","fought","fought","戦う"],
+    ["get","gets","getting","got","got","得る"],
+    ["have","has","having","had","had","持っている"],
+    ["hear","hears","hearing","heard","heard","聞く"],
+    ["hold","holds","holding","held","held","持つ"],
+    ["keep","keeps","keeping","kept","kept","保つ"],
+    ["leave","leaves","leaving","left","left","去る"],
+    ["lead","leads","leading","led","led","導く"],
+    ["lend","lends","lending","lent","lent","貸す"],
+    ["lose","loses","losing","lost","lost","失う"],
+    ["make","makes","making","made","made","作る"],
+    ["mean","means","meaning","meant","meant","意味する"],
+    ["meet","meets","meeting","met","met","会う"],
+    ["pay","pays","paying","paid","paid","払う"],
+    ["read","reads","reading","read","read","読む"],
+    ["say","says","saying","said","said","言う"],
+    ["sell","sells","selling","sold","sold","売る"],
+    ["send","sends","sending","sent","sent","送る"],
+    ["shine","shines","shining","shone","shone","輝く"],
+    ["sit","sits","sitting","sat","sat","座る"],
+    ["sleep","sleeps","sleeping","slept","slept","眠る"],
+    ["spend","spends","spending","spent","spent","過ごす"],
+    ["stand","stands","standing","stood","stood","立つ"],
+    ["tell","tells","telling","told","told","話す"],
+    ["think","thinks","thinking","thought","thought","思う"],
+    ["understand","understands","understanding","understood","understood","理解する"],
+    ["break","breaks","breaking","broke","broken","こわす"],
+    ["choose","chooses","choosing","chose","chosen","選ぶ"],
+    ["do","does","doing","did","done","する"],
+    ["draw","draws","drawing","drew","drawn","描く"],
+    ["drink","drinks","drinking","drank","drunk","飲む"],
+    ["drive","drives","driving","drove","driven","運転する"],
+    ["eat","eats","eating","ate","eaten","食べる"],
+    ["fall","falls","falling","fell","fallen","落ちる"],
+    ["fly","flies","flying","flew","flown","飛ぶ"],
+    ["forget","forgets","forgetting","forgot","forgotten","忘れる"],
+    ["give","gives","giving","gave","given","与える"],
+    ["go","goes","going","went","gone","行く"],
+    ["grow","grows","growing","grew","grown","成長する"],
+    ["know","knows","knowing","knew","known","知っている"],
+    ["ride","rides","riding","rode","ridden","乗る"],
+    ["ring","rings","ringing","rang","rung","鳴る"],
+    ["rise","rises","rising","rose","risen","昇る"],
+    ["see","sees","seeing","saw","seen","見る"],
+    ["show","shows","showing","showed","shown/showed","示す"],
+    ["sing","sings","singing","sang","sung","歌う"],
+    ["sink","sinks","sinking","sank","sunk","沈む"],
+    ["speak","speaks","speaking","spoke","spoken","話す"],
+    ["swim","swims","swimming","swam","swum","泳ぐ"],
+    ["take","takes","taking","took","taken","取る"],
+    ["throw","throws","throwing","threw","thrown","投げる"],
+    ["wake","wakes","waking","woke","woken","目が覚める"],
+    ["wear","wears","wearing","wore","worn","着ている"],
+    ["write","writes","writing","wrote","written","書く"],
+    ["be","is","being","was/were","been","~である・いる"]
+  ].map(function(d,i){
+    return {id:"irr-"+i, base:d[0], third:d[1], ing:d[2], past:d[3], pp:d[4], ja:d[5]};
+  });
+  var IRR_COLUMNS = [
+    {key:"ja", label:"意味"},
+    {key:"third", label:"三人称単数形"},
+    {key:"ing", label:"ing形"},
+    {key:"past", label:"過去形"},
+    {key:"pp", label:"過去分詞"}
+  ];
+
+  /* ================= 状態 ================= */
+  var state = {
+    customWords: [],
+    selectedPos: new Set(POS_LIST),
+    selectedGrade: new Set([1,2,3]),
+    mode: "mix",
+    questions: [],
+    graded: false,
+    requestedCount: 15,
+    listSelectedPos: new Set(POS_LIST),
+    listSelectedGrade: new Set([1,2,3]),
+    listSearch: "",
+    irrCount: 20,
+    irrCols: new Set(["third","ing","past","pp","ja"]),
+    irrRows: [],
+    irrGraded: false
+  };
+
+  function fullBank(){ return BUILTIN_BANK.concat(state.customWords); }
+
+  /* ================= ストレージ ================= */
+  async function loadCustomWords(){
+    try{
+      var res = await window.storage.get("custom-words", false);
+      if(res && res.value){ state.customWords = JSON.parse(res.value); }
+    }catch(e){ state.customWords = []; }
+    renderCustomWords();
+    renderPoolCount();
+    renderWordList();
+  }
+  async function saveCustomWords(){
+    try{ await window.storage.set("custom-words", JSON.stringify(state.customWords), false); }
+    catch(e){ /* ignore, still works in-memory for this session */ }
+  }
+
+  /* ================= ユーティリティ ================= */
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+  function normalizeJa(s){
+    return s.trim()
+      .replace(/[\s　、。・,.!！?？]/g,"")
+      .replace(/(である|です|だよ|だね|だった|でした|だ)$/,"")
+      .replace(/[なにのをがとへは]$/,"");
+  }
+
+  /* よくある類語グループ（この中のどれかが一致すれば正解とみなす） */
+  var SYNONYM_GROUPS = [
+    ["買う","購入する"],["作る","製造する","作成する"],["見る","眺める","観る"],
+    ["言う","話す","述べる"],["大きい","でかい"],["難しい","大変な","ややこしい"],
+    ["簡単な","やさしい","容易な"],["好き","好む","好きである"],["始める","開始する"],
+    ["終える","終わる","終了する"],["手伝う","助ける","サポートする"],
+    ["とても","すごく","非常に","たいへん"],["すぐに","直ちに","早速","すぐ"],
+    ["いつも","常に"],["たくさん","多く","多数の"],["少し","わずかに","ちょっと"],
+    ["美しい","きれいな"],["こわい","怖い","恐ろしい"],["うまい","上手な","得意な"],
+    ["有名な","よく知られた"],["大切な","重要な"],["必要な","要る"],
+    ["危険な","危ない"],["安全な","無事な"],["ゆっくり","のんびり","ゆっくりと"],
+    ["速く","急いで","早く"],["疲れた","くたびれた"],["忙しい","多忙な"],
+    ["静かな","落ち着いた"],["便利な","役に立つ"],["面白い","興味深い"],
+    ["退屈な","つまらない"],["おいしい","うまい"],["笑う","微笑む"],
+    ["泣く","涙を流す"],["怒る","腹を立てる"],["驚く","びっくりする"],
+    ["食べる","食う"],["飲む","口にする"],["住む","暮らす"],["与える","あげる"],
+    ["得る","手に入れる","獲得する"],["頼む","お願いする"],["答える","返事する"],
+    ["伝える","知らせる"],["理解する","わかる"],["覚える","記憶する"],
+    ["忘れる","忘却する"],["決める","決定する"],["続ける","継続する"],
+    ["変える","変更する"],["直す","修理する"],["育てる","育成する"],
+    ["守る","保護する"],["集める","集結させる"],["調べる","確認する"],
+  ];
+  var SYN_GROUP_MAP = {};
+  SYNONYM_GROUPS.forEach(function(group, idx){
+    group.forEach(function(word){ SYN_GROUP_MAP[normalizeJa(word)] = idx; });
+  });
+
+  function checkAnswer(userVal, q){
+    if(!userVal) return false;
+    if(q.direction === "ja2en"){
+      return userVal.trim().toLowerCase() === q.word.en.trim().toLowerCase();
+    }
+    var accepted = q.word.ja.split("/").map(function(s){return s.trim();});
+    var u = normalizeJa(userVal);
+    var uGroup = SYN_GROUP_MAP.hasOwnProperty(u) ? SYN_GROUP_MAP[u] : null;
+    return accepted.some(function(a){
+      var an = normalizeJa(a);
+      if(u === an) return true;
+      if(u.length>=2 && an.length>=2 && (an.indexOf(u)===0 || u.indexOf(an)===0)) return true;
+      var anGroup = SYN_GROUP_MAP.hasOwnProperty(an) ? SYN_GROUP_MAP[an] : null;
+      if(uGroup!==null && anGroup!==null && uGroup===anGroup) return true;
+      return false;
+    });
+  }
+
+  /* ================= 描画: 設定チップ ================= */
+  function renderModeChips(){
+    var el = document.getElementById("mode-chips");
+    el.innerHTML = MODE_LIST.map(function(m){
+      return '<button type="button" class="chip mode'+(state.mode===m.id?' active':'')+'" data-mode="'+m.id+'">'+m.label+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        state.mode = chip.getAttribute("data-mode");
+        renderModeChips();
+      });
+    });
+  }
+  function renderPosChips(){
+    var el = document.getElementById("pos-chips");
+    el.innerHTML = POS_LIST.map(function(p){
+      var active = state.selectedPos.has(p);
+      return '<button type="button" class="chip'+(active?' active':'')+'" data-pos="'+p+'">'+p+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        var p = chip.getAttribute("data-pos");
+        if(state.selectedPos.has(p)){
+          if(state.selectedPos.size>1) state.selectedPos.delete(p);
+        } else {
+          state.selectedPos.add(p);
+        }
+        renderPosChips();
+        renderPoolCount();
+      });
+    });
+  }
+  function renderGradeChips(){
+    var el = document.getElementById("grade-chips");
+    el.innerHTML = GRADE_LIST.map(function(g){
+      var active = state.selectedGrade.has(g.id);
+      return '<button type="button" class="chip'+(active?' active':'')+'" data-grade="'+g.id+'">'+g.label+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        var g = parseInt(chip.getAttribute("data-grade"), 10);
+        if(state.selectedGrade.has(g)){
+          if(state.selectedGrade.size>1) state.selectedGrade.delete(g);
+        } else {
+          state.selectedGrade.add(g);
+        }
+        renderGradeChips();
+        renderPoolCount();
+      });
+    });
+  }
+  function renderPoolCount(){
+    var pool = fullBank().filter(function(w){ return state.selectedPos.has(w.pos) && state.selectedGrade.has(w.grade); });
+    var el = document.getElementById("pool-count");
+    el.textContent = "選択中の品詞・学年から合計 "+pool.length+" 語（自作単語 "+state.customWords.length+" 語を含む）";
+  }
+
+  /* ================= 単語追加 ================= */
+  function renderCustomWords(){
+    var el = document.getElementById("cw-list");
+    if(state.customWords.length===0){
+      el.innerHTML = '<span class="cw-empty">まだ追加した単語はありません。</span>';
+      return;
+    }
+    el.innerHTML = state.customWords.map(function(w){
+      return '<span class="cw-tag">[中'+w.grade+'・'+w.pos+'] '+w.en+' - '+w.ja+
+             '<button data-id="'+w.id+'" title="削除">×</button></span>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll("button"), function(btn){
+      btn.addEventListener("click", function(){
+        var id = btn.getAttribute("data-id");
+        state.customWords = state.customWords.filter(function(w){return w.id!==id;});
+        saveCustomWords();
+        renderCustomWords();
+        renderPoolCount();
+        renderWordList();
+      });
+    });
+  }
+  document.getElementById("btn-add-word").addEventListener("click", function(){
+    var enInput = document.getElementById("cw-en");
+    var jaInput = document.getElementById("cw-ja");
+    var posSel = document.getElementById("cw-pos");
+    var gradeSel = document.getElementById("cw-grade");
+    var en = enInput.value.trim();
+    var ja = jaInput.value.trim();
+    var pos = posSel.value;
+    var grade = parseInt(gradeSel.value, 10);
+    if(!en || !ja){ alert("英単語と日本語の意味の両方を入力してください。"); return; }
+    var word = {id:"cw-"+Date.now()+"-"+Math.floor(Math.random()*1000), en:en, ja:ja, pos:pos, grade:grade, custom:true};
+    state.customWords.push(word);
+    saveCustomWords();
+    enInput.value=""; jaInput.value="";
+    renderCustomWords();
+    renderPoolCount();
+    renderWordList();
+  });
+
+  /* ================= テスト生成 ================= */
+  function generateQuestions(){
+    var pool = fullBank().filter(function(w){ return state.selectedPos.has(w.pos) && state.selectedGrade.has(w.grade); });
+    if(pool.length===0){ alert("出題する品詞・学年を1つ以上選んでください。"); return; }
+    var countInput = document.getElementById("quiz-count");
+    var requested = parseInt(countInput.value, 10);
+    if(!requested || requested < 1) requested = 15;
+    var picked = shuffle(pool).slice(0, Math.min(requested, pool.length));
+    state.requestedCount = requested;
+    state.questions = picked.map(function(w){
+      var dir;
+      if(state.mode==="mix"){ dir = Math.random()<0.5 ? "en2ja" : "ja2en"; }
+      else { dir = state.mode; }
+      return {word:w, direction:dir};
+    });
+    state.graded = false;
+    renderSheet();
+    document.getElementById("btn-grade").disabled = false;
+    document.getElementById("btn-clear").disabled = false;
+    document.getElementById("btn-print").disabled = false;
+  }
+
+  function renderSheet(){
+    document.getElementById("sheet-header").style.display = "block";
+    document.getElementById("stamp").style.display = "none";
+    document.getElementById("score-banner").classList.remove("show");
+
+    var listEl = document.getElementById("q-list");
+    if(state.questions.length < state.requestedCount){
+      listEl.innerHTML = '<div class="count-note" style="padding:10px 40px 0;">※ 選択中の品詞・学年の単語数が少ないため '+state.questions.length+' 問になっています。</div>';
+    } else {
+      listEl.innerHTML = "";
+    }
+    var rowsHtml = state.questions.map(function(q, idx){
+      var promptClass = q.direction==="en2ja" ? "en" : "ja";
+      var promptText = q.direction==="en2ja" ? q.word.en : q.word.ja.split("/")[0];
+      var placeholder = q.direction==="en2ja" ? "日本語の意味を書く" : "英単語を書く";
+      return '<div class="q-row">'+
+        '<span class="q-num">'+(idx+1)+'</span>'+
+        '<span class="q-pos">中'+q.word.grade+'・'+q.word.pos+'</span>'+
+        '<span class="q-prompt '+promptClass+'">'+promptText+'</span>'+
+        '<input type="text" class="answer-input" id="ans-'+idx+'" data-idx="'+idx+'" placeholder="'+placeholder+'" autocomplete="off" autocapitalize="off" spellcheck="false">'+
+        '<span class="q-feedback" id="fb-'+idx+'"></span>'+
+      '</div>';
+    }).join("");
+    listEl.innerHTML += rowsHtml;
+
+    // 解答一覧（印刷用）
+    var akEl = document.getElementById("ak-grid");
+    akEl.innerHTML = state.questions.map(function(q, idx){
+      return '<div class="ak-item"><span class="en">'+(idx+1)+'. '+q.word.en+'</span><span class="ja">'+q.word.ja+'</span></div>';
+    }).join("");
+  }
+
+  function gradeTest(){
+    if(state.questions.length===0) return;
+    var score = 0;
+    state.questions.forEach(function(q, idx){
+      var input = document.getElementById("ans-"+idx);
+      var fb = document.getElementById("fb-"+idx);
+      var val = input.value;
+      var ok = checkAnswer(val, q);
+      input.classList.remove("correct","incorrect");
+      if(ok){
+        score++;
+        input.classList.add("correct");
+        fb.textContent = "◯";
+      } else {
+        input.classList.add("incorrect");
+        var correctText = q.direction==="en2ja" ? q.word.ja.split("/")[0] : q.word.en;
+        fb.textContent = "→ "+correctText;
+      }
+    });
+    state.graded = true;
+    var banner = document.getElementById("score-banner");
+    banner.textContent = "採点結果： "+score+" / "+state.questions.length+" 問正解！";
+    banner.classList.add("show");
+    var stamp = document.getElementById("stamp");
+    stamp.style.display = "flex";
+    document.getElementById("stamp-num").textContent = score;
+    document.querySelector("#stamp .lbl").textContent = "/ "+state.questions.length;
+  }
+
+  function clearAnswers(){
+    state.questions.forEach(function(q, idx){
+      var input = document.getElementById("ans-"+idx);
+      var fb = document.getElementById("fb-"+idx);
+      if(input){ input.value=""; input.classList.remove("correct","incorrect"); }
+      if(fb){ fb.textContent=""; }
+    });
+    state.graded = false;
+    document.getElementById("score-banner").classList.remove("show");
+    document.getElementById("stamp").style.display = "none";
+  }
+
+  /* ================= ボタン ================= */
+  document.getElementById("btn-generate").addEventListener("click", generateQuestions);
+  document.getElementById("btn-grade").addEventListener("click", gradeTest);
+  document.getElementById("btn-clear").addEventListener("click", clearAnswers);
+  document.getElementById("btn-print").addEventListener("click", function(){
+    window.print();
+  });
+  document.getElementById("answers-toggle").addEventListener("change", function(e){
+    document.body.classList.toggle("include-answers", e.target.checked);
+  });
+  document.getElementById("irr-answers-toggle").addEventListener("change", function(e){
+    document.body.classList.toggle("include-answers", e.target.checked);
+  });
+
+  /* ================= 不規則動詞テスト ================= */
+  var IRR_COUNT_OPTIONS = [10, 20, 30, "all"];
+  function renderIrrCountChips(){
+    var el = document.getElementById("irr-count-chips");
+    el.innerHTML = IRR_COUNT_OPTIONS.map(function(c){
+      var label = (c==="all") ? "全て("+IRREGULAR_VERB_DATA.length+")" : c+"問";
+      var active = state.irrCount === c;
+      return '<button type="button" class="chip'+(active?' active':'')+'" data-count="'+c+'">'+label+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        var c = chip.getAttribute("data-count");
+        state.irrCount = (c==="all") ? "all" : parseInt(c,10);
+        renderIrrCountChips();
+      });
+    });
+  }
+  function renderIrrColChips(){
+    var el = document.getElementById("irr-col-chips");
+    el.innerHTML = IRR_COLUMNS.map(function(c){
+      var active = state.irrCols.has(c.key);
+      return '<button type="button" class="chip'+(active?' active':'')+'" data-col="'+c.key+'">'+c.label+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        var k = chip.getAttribute("data-col");
+        if(state.irrCols.has(k)){
+          if(state.irrCols.size>1) state.irrCols.delete(k);
+        } else {
+          state.irrCols.add(k);
+        }
+        renderIrrColChips();
+      });
+    });
+  }
+
+  function generateIrregularTest(){
+    var activeCols = IRR_COLUMNS.filter(function(c){ return state.irrCols.has(c.key); });
+    if(activeCols.length===0){ alert("空欄にする項目を1つ以上選んでください。"); return; }
+    var n = (state.irrCount==="all") ? IRREGULAR_VERB_DATA.length : Math.min(state.irrCount, IRREGULAR_VERB_DATA.length);
+    state.irrRows = shuffle(IRREGULAR_VERB_DATA).slice(0, n);
+    state.irrGraded = false;
+    renderIrregularSheet(activeCols);
+    document.getElementById("btn-irr-grade").disabled = false;
+    document.getElementById("btn-irr-clear").disabled = false;
+    document.getElementById("btn-irr-print").disabled = false;
+  }
+
+  function renderIrregularSheet(activeCols){
+    document.getElementById("irr-sheet-header").style.display = "block";
+    document.getElementById("irr-sheet-title").innerHTML = '不規則動詞<span class="accent">テスト</span>';
+    document.getElementById("irr-stamp").style.display = "none";
+    document.getElementById("irr-score-banner").classList.remove("show");
+    document.getElementById("irr-answer-key").style.display = "";
+
+    var headEl = document.getElementById("irr-table-head");
+    headEl.innerHTML = '<th>#</th><th>原形</th>' + activeCols.map(function(c){ return '<th>'+c.label+'</th>'; }).join("");
+
+    var bodyEl = document.getElementById("irr-table-body");
+    bodyEl.innerHTML = state.irrRows.map(function(v, idx){
+      var cells = '<td>'+(idx+1)+'</td><td class="base">'+v.base+'</td>';
+      cells += activeCols.map(function(c){
+        return '<td><input type="text" class="irr-input" id="irr-ans-'+idx+'-'+c.key+'" data-idx="'+idx+'" data-col="'+c.key+'" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="irr-fb" id="irr-fb-'+idx+'-'+c.key+'"></span></td>';
+      }).join("");
+      return '<tr>'+cells+'</tr>';
+    }).join("");
+
+    var akWrap = document.getElementById("irr-ak-table-wrap");
+    var akHead = '<tr><th>原形</th>'+activeCols.map(function(c){return '<th>'+c.label+'</th>';}).join("")+'</tr>';
+    var akRows = state.irrRows.map(function(v){
+      return '<tr><td>'+v.base+'</td>'+activeCols.map(function(c){ return '<td>'+v[c.key].replace(/\//g," / ")+'</td>'; }).join("")+'</tr>';
+    }).join("");
+    akWrap.innerHTML = '<table>'+akHead+akRows+'</table>';
+  }
+
+  function checkIrrAnswer(userVal, correctRaw, colKey){
+    if(!userVal) return false;
+    var accepted = correctRaw.split("/").map(function(s){return s.trim();});
+    if(colKey === "ja"){
+      var u = normalizeJa(userVal);
+      var uGroup = SYN_GROUP_MAP.hasOwnProperty(u) ? SYN_GROUP_MAP[u] : null;
+      return accepted.some(function(a){
+        var an = normalizeJa(a);
+        if(u === an) return true;
+        if(u.length>=2 && an.length>=2 && (an.indexOf(u)===0 || u.indexOf(an)===0)) return true;
+        var anGroup = SYN_GROUP_MAP.hasOwnProperty(an) ? SYN_GROUP_MAP[an] : null;
+        if(uGroup!==null && anGroup!==null && uGroup===anGroup) return true;
+        return false;
+      });
+    }
+    var uv = userVal.trim().toLowerCase();
+    return accepted.some(function(a){ return uv === a.toLowerCase(); });
+  }
+
+  function gradeIrregularTest(){
+    if(state.irrRows.length===0) return;
+    var activeCols = IRR_COLUMNS.filter(function(c){ return state.irrCols.has(c.key); });
+    var totalCells = state.irrRows.length * activeCols.length;
+    var correctCells = 0;
+    state.irrRows.forEach(function(v, idx){
+      activeCols.forEach(function(c){
+        var input = document.getElementById("irr-ans-"+idx+"-"+c.key);
+        var fb = document.getElementById("irr-fb-"+idx+"-"+c.key);
+        var ok = checkIrrAnswer(input.value, v[c.key], c.key);
+        input.classList.remove("correct","incorrect");
+        if(ok){
+          correctCells++;
+          input.classList.add("correct");
+          fb.textContent = "";
+        } else {
+          input.classList.add("incorrect");
+          fb.textContent = "→ "+v[c.key].replace(/\//g," / ");
+        }
+      });
+    });
+    state.irrGraded = true;
+    var banner = document.getElementById("irr-score-banner");
+    banner.textContent = "採点結果： "+correctCells+" / "+totalCells+" 個正解！";
+    banner.classList.add("show");
+    var stamp = document.getElementById("irr-stamp");
+    stamp.style.display = "flex";
+    document.getElementById("irr-stamp-num").textContent = correctCells;
+    document.querySelector("#irr-stamp .lbl").textContent = "/ "+totalCells;
+  }
+
+  function clearIrregularAnswers(){
+    var activeCols = IRR_COLUMNS.filter(function(c){ return state.irrCols.has(c.key); });
+    state.irrRows.forEach(function(v, idx){
+      activeCols.forEach(function(c){
+        var input = document.getElementById("irr-ans-"+idx+"-"+c.key);
+        var fb = document.getElementById("irr-fb-"+idx+"-"+c.key);
+        if(input){ input.value=""; input.classList.remove("correct","incorrect"); }
+        if(fb){ fb.textContent=""; }
+      });
+    });
+    state.irrGraded = false;
+    document.getElementById("irr-score-banner").classList.remove("show");
+    document.getElementById("irr-stamp").style.display = "none";
+  }
+
+  function renderIrregularStudyList(){
+    document.getElementById("irr-sheet-header").style.display = "block";
+    document.getElementById("irr-sheet-title").innerHTML = '不規則動詞 学習用一覧<span class="accent">（辞書順）</span>';
+    document.getElementById("irr-stamp").style.display = "none";
+    document.getElementById("irr-score-banner").classList.remove("show");
+    document.getElementById("irr-answer-key").style.display = "none";
+
+    var sorted = IRREGULAR_VERB_DATA.slice().sort(function(a,b){
+      return a.base.toLowerCase().localeCompare(b.base.toLowerCase());
+    });
+
+    var headEl = document.getElementById("irr-table-head");
+    headEl.innerHTML = '<th>#</th><th>原形</th><th>意味</th><th>三人称単数形</th><th>ing形</th><th>過去形</th><th>過去分詞</th>';
+
+    var bodyEl = document.getElementById("irr-table-body");
+    bodyEl.innerHTML = sorted.map(function(v, idx){
+      return '<tr>'+
+        '<td>'+(idx+1)+'</td>'+
+        '<td class="base">'+v.base+'</td>'+
+        '<td class="given">'+v.ja+'</td>'+
+        '<td class="given">'+v.third+'</td>'+
+        '<td class="given">'+v.ing+'</td>'+
+        '<td class="given">'+v.past.replace(/\//g," / ")+'</td>'+
+        '<td class="given">'+v.pp.replace(/\//g," / ")+'</td>'+
+      '</tr>';
+    }).join("");
+
+    document.getElementById("btn-irr-grade").disabled = true;
+    document.getElementById("btn-irr-clear").disabled = true;
+    document.getElementById("btn-irr-print").disabled = false;
+  }
+  document.getElementById("btn-irr-study").addEventListener("click", renderIrregularStudyList);
+
+  document.getElementById("btn-irr-generate").addEventListener("click", generateIrregularTest);
+  document.getElementById("btn-irr-grade").addEventListener("click", gradeIrregularTest);
+  document.getElementById("btn-irr-clear").addEventListener("click", clearIrregularAnswers);
+  document.getElementById("btn-irr-print").addEventListener("click", function(){
+    window.print();
+  });
+
+  /* ================= タブ切り替え ================= */
+  Array.prototype.forEach.call(document.querySelectorAll(".tab-btn"), function(btn){
+    btn.addEventListener("click", function(){
+      var view = btn.getAttribute("data-view");
+      Array.prototype.forEach.call(document.querySelectorAll(".tab-btn"), function(b){
+        b.classList.toggle("active", b===btn);
+      });
+      document.getElementById("view-test").style.display = (view==="test") ? "" : "none";
+      document.getElementById("view-list").style.display = (view==="list") ? "" : "none";
+      document.getElementById("view-irregular").style.display = (view==="irregular") ? "" : "none";
+      if(view==="list"){ renderWordList(); }
+    });
+  });
+
+  /* ================= 単語一覧（学習用） ================= */
+  function renderListPosChips(){
+    var el = document.getElementById("list-pos-chips");
+    el.innerHTML = POS_LIST.map(function(p){
+      var active = state.listSelectedPos.has(p);
+      return '<button type="button" class="chip'+(active?' active':'')+'" data-pos="'+p+'">'+p+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        var p = chip.getAttribute("data-pos");
+        if(state.listSelectedPos.has(p)){
+          if(state.listSelectedPos.size>1) state.listSelectedPos.delete(p);
+        } else {
+          state.listSelectedPos.add(p);
+        }
+        renderListPosChips();
+        renderWordList();
+      });
+    });
+  }
+  function renderListGradeChips(){
+    var el = document.getElementById("list-grade-chips");
+    el.innerHTML = GRADE_LIST.map(function(g){
+      var active = state.listSelectedGrade.has(g.id);
+      return '<button type="button" class="chip'+(active?' active':'')+'" data-grade="'+g.id+'">'+g.label+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        var g = parseInt(chip.getAttribute("data-grade"), 10);
+        if(state.listSelectedGrade.has(g)){
+          if(state.listSelectedGrade.size>1) state.listSelectedGrade.delete(g);
+        } else {
+          state.listSelectedGrade.add(g);
+        }
+        renderListGradeChips();
+        renderWordList();
+      });
+    });
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c];
+    });
+  }
+  function renderWordList(){
+    var query = state.listSearch.trim().toLowerCase();
+    var pool = fullBank().filter(function(w){
+      if(!state.listSelectedPos.has(w.pos)) return false;
+      if(!state.listSelectedGrade.has(w.grade)) return false;
+      if(query && w.en.toLowerCase().indexOf(query)===-1 && w.ja.indexOf(query)===-1) return false;
+      return true;
+    });
+    pool.sort(function(a,b){ return a.en.toLowerCase().localeCompare(b.en.toLowerCase()); });
+
+    document.getElementById("list-count").textContent = pool.length + " 語が見つかりました（全" + fullBank().length + "語中）";
+
+    var body = document.getElementById("word-table-body");
+    if(pool.length===0){
+      body.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ink-soft);padding:24px;">該当する単語が見つかりません。</td></tr>';
+      return;
+    }
+    body.innerHTML = pool.map(function(w){
+      return '<tr>'+
+        '<td class="en">'+escapeHtml(w.en)+'</td>'+
+        '<td class="pos"><span>'+escapeHtml(w.pos)+'</span></td>'+
+        '<td class="grade">中'+w.grade+'</td>'+
+        '<td class="ja">'+escapeHtml(w.ja)+'</td>'+
+      '</tr>';
+    }).join("");
+  }
+  document.getElementById("word-search").addEventListener("input", function(e){
+    state.listSearch = e.target.value;
+    renderWordList();
+  });
+
+  /* ================= 初期化 ================= */
+  renderModeChips();
+  renderPosChips();
+  renderGradeChips();
+  renderListPosChips();
+  renderListGradeChips();
+  renderIrrCountChips();
+  renderIrrColChips();
+  loadCustomWords();
+})();
+</script>
+</body>
+</html>
