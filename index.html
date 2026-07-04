@@ -254,6 +254,7 @@
   /* ---------- Print ---------- */
   /* ---------- Mobile responsive ---------- */
   @media (max-width: 640px){
+    .sheet-header::before, .q-list::before{display:none;}
     .wrap{padding:16px 12px 60px;}
     .app-hero{padding:16px 16px;gap:12px;}
     .app-hero .mark{width:42px;height:42px;font-size:20px;}
@@ -275,7 +276,7 @@
     .btn-row{flex-direction:column;align-items:stretch;}
     .btn-row button, .btn-row label{width:100%;justify-content:center;text-align:center;}
 
-    .sheet-header{padding:18px 16px 14px 26px;}
+    .sheet-header{padding:18px 16px 14px 16px;}
     .sheet-title{font-size:20px;}
     .stamp{width:64px;height:64px;right:14px;top:14px;}
     .stamp .num{font-size:17px;}
@@ -472,27 +473,6 @@
     </div>
   </section>
 
-  <section class="panel no-print">
-    <h2>単語を追加する</h2>
-    <div class="cw-form">
-      <input type="text" id="cw-en" placeholder="英単語 (例: friendly)">
-      <select id="cw-pos">
-        <option value="動詞">動詞</option>
-        <option value="形容詞">形容詞</option>
-        <option value="形容動詞">形容動詞</option>
-        <option value="副詞">副詞</option>
-      </select>
-      <select id="cw-grade">
-        <option value="1">中学1年</option>
-        <option value="2">中学2年</option>
-        <option value="3">中学3年</option>
-      </select>
-      <input type="text" id="cw-ja" placeholder="日本語の意味 (例: 友好的な)">
-      <button class="primary small" id="btn-add-word">追加する</button>
-    </div>
-    <div class="cw-list" id="cw-list"></div>
-  </section>
-
   <section class="sheet" id="sheet">
     <div class="sheet-header" id="sheet-header" style="display:none;">
       <h2 class="sheet-title">英単語<span class="accent">テスト</span></h2>
@@ -519,6 +499,26 @@
   </div>
 
   <div id="view-list" style="display:none;">
+    <section class="panel no-print">
+      <h2>単語を追加する</h2>
+      <div class="cw-form">
+        <input type="text" id="cw-en" placeholder="英単語 (例: friendly)">
+        <select id="cw-pos">
+          <option value="動詞">動詞</option>
+          <option value="形容詞">形容詞</option>
+          <option value="形容動詞">形容動詞</option>
+          <option value="副詞">副詞</option>
+        </select>
+        <select id="cw-grade">
+          <option value="1">中学1年</option>
+          <option value="2">中学2年</option>
+          <option value="3">中学3年</option>
+        </select>
+        <input type="text" id="cw-ja" placeholder="日本語の意味 (例: 友好的な)">
+        <button class="primary small" id="btn-add-word">追加する</button>
+      </div>
+      <div class="cw-list" id="cw-list"></div>
+    </section>
     <section class="panel no-print">
       <h2>単語一覧（学習用）</h2>
       <div class="row">
