@@ -6,7 +6,7 @@
 <title>英単語テスト｜中学頻出 動詞・形容詞・形容動詞・副詞</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Yomogi&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Yomogi&family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#FBF9F3;
@@ -227,8 +227,8 @@
   .answer-input.correct{border-bottom-color:var(--green);}
   .answer-input.incorrect{border-bottom-color:var(--red);}
   .q-feedback{
-    font-family:"Yomogi",cursive;color:var(--red);font-size:15px;flex:0 0 auto;
-    min-width:70px;
+    font-family:"Klee One",cursive;color:var(--red);font-size:15px;flex:0 0 auto;
+    min-width:70px;font-weight:600;
   }
   .empty-state{padding:60px 30px;text-align:center;color:var(--ink-soft);}
   .empty-state .mark{font-family:"Yomogi",cursive;font-size:34px;color:var(--red);display:block;margin-bottom:10px;}
@@ -417,7 +417,7 @@
   .irr-table .irr-input:focus{border-bottom-color:var(--ink);}
   .irr-table .irr-input.correct{border-bottom-color:var(--green);}
   .irr-table .irr-input.incorrect{border-bottom-color:var(--red);}
-  .irr-table .irr-fb{display:block;font-family:"Yomogi",cursive;color:var(--red);font-size:11.5px;margin-top:2px;}
+  .irr-table .irr-fb{display:block;font-family:"Klee One",cursive;color:var(--red);font-size:11.5px;margin-top:2px;font-weight:600;}
   #irr-ak-table-wrap table{width:100%;border-collapse:collapse;font-size:12.5px;}
   #irr-ak-table-wrap th{text-align:left;padding:6px 8px;background:var(--ink);color:#fff;font-size:10.5px;}
   #irr-ak-table-wrap td{padding:5px 8px;border-bottom:1px dotted var(--rule);}
@@ -449,6 +449,13 @@
         <div class="chip-set" id="mode-chips"></div>
       </div>
       <div class="field-group">
+        <div class="field-label">問題数</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div class="chip-set" id="quiz-count-chips"></div>
+          <input type="number" id="quiz-count" value="15" min="1" max="734" style="width:80px;font-size:14px;padding:8px 10px;border:1.4px solid var(--rule-strong);border-radius:7px;font-family:inherit;">
+        </div>
+      </div>
+      <div class="field-group">
         <div class="field-label">出題する品詞</div>
         <div class="chip-set" id="pos-chips"></div>
       </div>
@@ -456,16 +463,10 @@
         <div class="field-label">出題する学年</div>
         <div class="chip-set" id="grade-chips"></div>
         </div>
-      <div class="field-group">
-        <div class="field-label">問題数</div>
-        <input type="number" id="quiz-count" value="15" min="1" max="734" style="width:80px;font-size:14px;padding:8px 10px;border:1.4px solid var(--rule-strong);border-radius:7px;font-family:inherit;">
-      </div>
     </div>
     <div class="count-note" id="pool-count" style="margin-top:10px;"></div>
     <div class="btn-row">
       <button class="primary" id="btn-generate">テストを作成する</button>
-      <button class="accent" id="btn-grade" disabled>採点する</button>
-      <button class="ghost" id="btn-clear" disabled>解答をやり直す</button>
       <label class="chip" style="display:flex;align-items:center;gap:6px;" id="answers-toggle-wrap">
         <input type="checkbox" id="answers-toggle"> 印刷時に解答一覧を含める
       </label>
@@ -484,13 +485,17 @@
         <div class="lbl">/ 30</div>
       </div>
     </div>
-    <div class="score-banner" id="score-banner"></div>
     <div class="q-list" id="q-list">
       <div class="empty-state">
         <span class="mark">✎</span>
         「テストを作成する」ボタンを押すと、ここに問題が表示されます。
       </div>
     </div>
+    <div class="btn-row no-print" id="bottom-grade-row" style="display:none;padding:0 40px 20px;">
+      <button class="accent" id="btn-grade-bottom">採点する</button>
+      <button class="ghost" id="btn-clear" disabled>解答をやり直す</button>
+    </div>
+    <div class="score-banner" id="score-banner"></div>
     <div class="answer-key" id="answer-key">
       <h3>解答一覧</h3>
       <div class="ak-grid" id="ak-grid"></div>
@@ -564,8 +569,6 @@
       </div>
       <div class="btn-row">
         <button class="primary" id="btn-irr-generate">テストを作成する</button>
-        <button class="accent" id="btn-irr-grade" disabled>採点する</button>
-        <button class="ghost" id="btn-irr-clear" disabled>解答をやり直す</button>
         <label class="chip" style="display:flex;align-items:center;gap:6px;">
           <input type="checkbox" id="irr-answers-toggle"> 印刷時に解答一覧を含める
         </label>
@@ -585,7 +588,6 @@
           <div class="lbl">/ -</div>
         </div>
       </div>
-      <div class="score-banner" id="irr-score-banner"></div>
       <span class="scroll-hint no-print">→ 横にスクロールできます</span>
       <div style="overflow-x:auto;">
         <table class="irr-table" id="irr-table">
@@ -599,6 +601,11 @@
           </tbody>
         </table>
       </div>
+      <div class="btn-row no-print" id="irr-bottom-grade-row" style="display:none;padding:0 0 20px;">
+        <button class="accent" id="btn-irr-grade-bottom">採点する</button>
+        <button class="ghost" id="btn-irr-clear" disabled>解答をやり直す</button>
+      </div>
+      <div class="score-banner" id="irr-score-banner"></div>
       <div class="answer-key" id="irr-answer-key">
         <h3>解答一覧</h3>
         <div id="irr-ak-table-wrap"></div>
@@ -615,7 +622,7 @@
 
   /* ================= 単語データ ================= */
   var VERB_DATA = [
-    ["am","です/ます/にいる",1],["answer","に答える",1],["are","です/ます/にいる",1],
+    ["am","です/ます/にいる",1],["answer","答える",1],["are","です/ます/にいる",1],
     ["arrive","到着する",1],["be","である/になる/ある",1],["begin","を始める/始まる",1],
     ["camp","キャンプする",1],["can","することがあり得る/～できる",1],["climb","を登る/登る",1],
     ["come","来る/になる",1],["cook","料理する",1],["count","数える",1],
@@ -641,13 +648,13 @@
     ["understand","を理解する/理解する",1],["use","使う",1],["wait","待つ",1],
     ["want","欲しい",1],["welcome","歓迎する",1],["accept","を受け入れる",2],
     ["act","演じる",2],["add","加える",2],["agree","賛成する",2],
-    ["agree with","に賛成する",2],["apologize","謝る",2],["appear","現れる",2],
-    ["arrive at","に到着する",2],["ask","をたのむ",2],["bake","焼く",2],
-    ["be interested in","に興味がある",2],["believe","信じる",2],["bend","曲げる",2],
+    ["agree with","賛成する",2],["apologize","謝る",2],["appear","現れる",2],
+    ["arrive at","到着する",2],["ask","をたのむ",2],["bake","焼く",2],
+    ["be interested in","興味がある",2],["believe","信じる",2],["bend","曲げる",2],
     ["blow","吹く",2],["boil","ゆでる/煮る",2],["born","生まれる",2],
     ["borrow","を借りる/借りる",2],["break","壊れる/破る",2],["bring","持って来る",2],
     ["brush","をみがく",2],["build","を建てる",2],["burn","を燃やす",2],
-    ["buy","を買う",2],["call","に電話をかける",2],["call back","折り返し電話する",2],
+    ["buy","を買う",2],["call","電話をかける",2],["call back","折り返し電話する",2],
     ["care","気にする",2],["carry","を運ぶ",2],["catch","を捕まえる",2],
     ["celebrate","祝う",2],["change","変わる/を変える",2],["change trains","電車を乗りかえる",2],
     ["check","を調べる",2],["cheer","応援する",2],["choose","を選ぶ/選ぶ",2],
@@ -655,7 +662,7 @@
     ["come from","出身である",2],["connect","を結びつける/つながる",2],["continue","を続ける/続く",2],
     ["cost","費用がかかる",2],["cover","覆う",2],["create","を創造する",2],
     ["cry","泣く",2],["cut","切る/を切る",2],["decide","を決める",2],
-    ["deliver","配達する",2],["depend","頼る",2],["depend on","に頼る",2],
+    ["deliver","配達する",2],["depend","頼る",2],["depend on","頼る",2],
     ["die","死ぬ",2],["disappear","姿を消す/消滅する",2],["discover","発見する/を発見する",2],
     ["dislike","嫌う",2],["display","展示する",2],["do well","元気になる",2],
     ["draw","描く/引く",2],["drive","運転する",2],["drop","を落とす/落ちる",2],
@@ -664,7 +671,7 @@
     ["fail","失敗する",2],["fall","転ぶ/転倒する/落ちる",2],["fall down","倒れる",2],
     ["feed","えさを与える",2],["feel","と感じる/感じる",2],["feel like ~ing","したい気がする",2],
     ["fight","たたかう",2],["find","を発見する",2],["finish","を終える",2],
-    ["fit","(サイズが)合う",2],["fly","飛ぶ",2],["follow","に従う",2],
+    ["fit","(サイズが)合う",2],["fly","飛ぶ",2],["follow","従う",2],
     ["forget","を忘れる/忘れる",2],["gather","を集める",2],["get out","外へ出る",2],
     ["give","を与える/渡す",2],["go back","帰る/戻る",2],["go by","通り過ぎる",2],
     ["go on","する/始める/時間が過ぎ去る",2],["greet","挨拶する",2],["grow","成長する",2],
@@ -674,7 +681,7 @@
     ["hold","をつかむ/を開く/行う",2],["hope","を望む/望む",2],["hope to","したいと願う",2],
     ["hurry","急ぐ",2],["imagine","想像する/を想像する",2],["improve","を改善する/進歩する",2],
     ["interested in","興味をもっている",2],["introduce","を紹介する/紹介する",2],["invent","を発明する",2],
-    ["invite","を招待する",2],["join","に参加する/参加する",2],["keep","し続ける/を保つ",2],
+    ["invite","を招待する",2],["join","参加する",2],["keep","し続ける/を保つ",2],
     ["kill","を殺す",2],["land","着陸する",2],["lend","貸す",2],
     ["let","～に～をさせる",2],["lie","横たわる",2],["lift","持ち上げる",2],
     ["lose","負ける/を失う",2],["mark","印をつける",2],["marry","結婚する",2],
@@ -699,23 +706,23 @@
     ["trust","を信用する",2],["turn","向く/曲がる",2],["wake","目が覚める",2],
     ["wake up","目を覚ます",2],["wear","着る/を着ている",2],["whisper","ささやく",2],
     ["wish","望む/を望む",2],["work out","運動する",2],["worry","心配させる",2],
-    ["wrap","を包む",2],["advise","助言する",3],["affect","に影響を与える",3],
+    ["wrap","を包む",2],["advise","助言する",3],["affect","影響を与える",3],
     ["amaze","をびっくりさせる",3],["announce","を発表する",3],["arrest","を逮捕する",3],
-    ["attend","に通う/に出席する",3],["awake","目が覚める",3],["ban","を禁止する",3],
-    ["base","基礎とする",3],["be about to","今にもしようとしている",3],["be amazed at","に驚かされる",3],
-    ["be different from","とはちがっている",3],["be in danger of","の危険にさらされている",3],["be satisfied with","に満足する",3],
+    ["attend","通う/出席する",3],["awake","目が覚める",3],["ban","を禁止する",3],
+    ["base","基礎とする",3],["be about to","今にもしようとしている",3],["be amazed at","驚かされる",3],
+    ["be different from","とはちがっている",3],["be in danger of","の危険にさらされている",3],["be satisfied with","満足する",3],
     ["begin to","し始める",3],["belong","のものである",3],["blush","赤面する",3],
     ["bother","悩ます",3],["breed","を飼育する/繁殖する",3],["broaden","広げる",3],
     ["capture","を捕まえる",3],["charge","を充電する",3],["check out","を調査する",3],
     ["circle","を丸で囲む",3],["communicate","連絡する",3],["complain","不平を言う",3],
     ["contact","と連絡をとる",3],["control","を管理する",3],["cross","を横切る/渡る",3],
-    ["damage","に損害を与える",3],["decide to","しようと決心する",3],["decrease","減少する",3],
+    ["damage","損害を与える",3],["decide to","しようと決心する",3],["decrease","減少する",3],
     ["design","を設計する",3],["despair","絶望する",3],["destroy","を破壊する",3],
     ["develop","を発達させる",3],["die out","絶滅する",3],["discuss","話し合う",3],
     ["do one's best","最善をつくす",3],["donate","を寄付する",3],["drop out","中退する",3],
     ["earn","をかせぐ",3],["embarrass","当惑させる",3],["encourage","を勇気づける",3],
     ["encourage to ～","に～するように促す",3],["establish","を設立する",3],["exercise","練習する",3],
-    ["explain","を説明する/説明する",3],["extend","を広げる",3],["face","に直面する",3],
+    ["explain","を説明する/説明する",3],["extend","を広げる",3],["face","直面する",3],
     ["fade","消えていく",3],["faint","気を失う",3],["fascinate","魅了する",3],
     ["feel free to","遠慮なくする",3],["fill","いっぱいにする",3],["fire","を首にする/解雇する",3],
     ["focus","集中する",3],["fold","を折る/折りたたむ",3],["form","形作る",3],
@@ -723,7 +730,7 @@
     ["graduate","卒業する",3],["grin","にっこり笑う",3],["hand out","を配る",3],
     ["handle","を処理する",3],["heal","治す",3],["hunt","を狩る",3],
     ["hurt","を傷つける/傷つける",3],["import","を輸入する",3],["impress","感動させる",3],
-    ["include","を含む",3],["increase","を増やす/増大させる",3],["influence","に影響を及ぼす",3],
+    ["include","を含む",3],["increase","を増やす/増大させる",3],["influence","影響を及ぼす",3],
     ["injure","を傷つける",3],["knit","編む",3],["lead","を導く",3],
     ["locate","位置を特定する",3],["look forward to ...","を楽しみに待つ",3],["make all the difference","大きなちがいを生む",3],
     ["manage","管理する",3],["measure","をはかる",3],["miss","さびしく思う/を見逃す",3],
@@ -731,7 +738,7 @@
     ["organize","組織する",3],["overcome","乗り越える",3],["panic","うろたえる",3],
     ["pardon","許す",3],["preserve","を保存する",3],["print","を印刷する",3],
     ["produce","を生産する",3],["protest","抗議する",3],["punish","罰する",3],
-    ["pursue","を追い求める",3],["raise","手などを挙げる",3],["reach","に着く/到着する",3],
+    ["pursue","を追い求める",3],["raise","手などを挙げる",3],["reach","着く/到着する",3],
     ["realize","だと気づく/実現する",3],["receive","を受け取る",3],["recognize","だと分かる",3],
     ["reduce","減らす",3],["relate","を～に関係させる",3],["relate to ～","を～に関係させる",3],
     ["release","を放出する",3],["remind","を気づかせる",3],["research","を研究する",3],
@@ -740,12 +747,12 @@
     ["run out of","を使い果たす",3],["satisfy","を満足させる",3],["scold","叱る",3],
     ["select","を選ぶ",3],["separate","分ける",3],["sigh","ため息をつく",3],
     ["sink","沈む",3],["smell","においがする",3],["solve","を解決する",3],
-    ["sort","分類する",3],["sound","に聞こえる",3],["stick","突き刺す",3],
+    ["sort","分類する",3],["sound","聞こえる",3],["stick","突き刺す",3],
     ["store","を蓄える",3],["strike","打つ",3],["strive","懸命に努力する",3],
     ["succeed","成功する",3],["suffer","苦しむ",3],["supply","供給する",3],
     ["surround","を囲む",3],["survey","調査する",3],["survive","生き残る",3],
-    ["tell to ～","に～するように言う",3],["too to ～","～するにはすぎる",3],["touch","にさわる",3],
-    ["translate","翻訳する",3],["transport","を輸送する",3],["turn into","に変わる",3],
+    ["tell to ～","に～するように言う",3],["too to ～","～するにはすぎる",3],["touch","さわる",3],
+    ["translate","翻訳する",3],["transport","を輸送する",3],["turn into","変わる",3],
     ["weigh","重さがある",3],["wonder","～かなと思う/不思議に思う",3]
   ];
 
@@ -1022,7 +1029,8 @@ var ADV_DATA = [
     return s.trim()
       .replace(/[\s　、。・,.!！?？]/g,"")
       .replace(/(である|です|だよ|だね|だった|でした|だ)$/,"")
-      .replace(/[なにのをがとへは]$/,"");
+      .replace(/[なにのをがとへは]$/,"")
+      .replace(/^を/,"");
   }
 
   /* よくある類語グループ（この中のどれかが一致すれば正解とみなす） */
@@ -1071,6 +1079,24 @@ var ADV_DATA = [
   }
 
   /* ================= 描画: 設定チップ ================= */
+  function renderQuizCountChips(){
+    var el = document.getElementById("quiz-count-chips");
+    var input = document.getElementById("quiz-count");
+    var current = parseInt(input.value, 10);
+    var options = [10, 20, 30];
+    el.innerHTML = options.map(function(n){
+      var active = current === n;
+      return '<button type="button" class="chip'+(active?' active':'')+'" data-count="'+n+'">'+n+'問</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        input.value = chip.getAttribute("data-count");
+        renderQuizCountChips();
+      });
+    });
+  }
+  document.getElementById("quiz-count").addEventListener("input", renderQuizCountChips);
+
   function renderModeChips(){
     var el = document.getElementById("mode-chips");
     el.innerHTML = MODE_LIST.map(function(m){
@@ -1185,9 +1211,9 @@ var ADV_DATA = [
     });
     state.graded = false;
     renderSheet();
-    document.getElementById("btn-grade").disabled = false;
     document.getElementById("btn-clear").disabled = false;
     document.getElementById("btn-print").disabled = false;
+    document.getElementById("bottom-grade-row").style.display = "flex";
   }
 
   function renderSheet(){
@@ -1265,7 +1291,7 @@ var ADV_DATA = [
 
   /* ================= ボタン ================= */
   document.getElementById("btn-generate").addEventListener("click", generateQuestions);
-  document.getElementById("btn-grade").addEventListener("click", gradeTest);
+  document.getElementById("btn-grade-bottom").addEventListener("click", gradeTest);
   document.getElementById("btn-clear").addEventListener("click", clearAnswers);
   document.getElementById("btn-print").addEventListener("click", function(){
     window.print();
@@ -1320,9 +1346,9 @@ var ADV_DATA = [
     state.irrRows = shuffle(IRREGULAR_VERB_DATA).slice(0, n);
     state.irrGraded = false;
     renderIrregularSheet(activeCols);
-    document.getElementById("btn-irr-grade").disabled = false;
     document.getElementById("btn-irr-clear").disabled = false;
     document.getElementById("btn-irr-print").disabled = false;
+    document.getElementById("irr-bottom-grade-row").style.display = "flex";
   }
 
   function renderIrregularSheet(activeCols){
@@ -1444,14 +1470,14 @@ var ADV_DATA = [
       '</tr>';
     }).join("");
 
-    document.getElementById("btn-irr-grade").disabled = true;
     document.getElementById("btn-irr-clear").disabled = true;
     document.getElementById("btn-irr-print").disabled = false;
+    document.getElementById("irr-bottom-grade-row").style.display = "none";
   }
   document.getElementById("btn-irr-study").addEventListener("click", renderIrregularStudyList);
 
+  document.getElementById("btn-irr-grade-bottom").addEventListener("click", gradeIrregularTest);
   document.getElementById("btn-irr-generate").addEventListener("click", generateIrregularTest);
-  document.getElementById("btn-irr-grade").addEventListener("click", gradeIrregularTest);
   document.getElementById("btn-irr-clear").addEventListener("click", clearIrregularAnswers);
   document.getElementById("btn-irr-print").addEventListener("click", function(){
     window.print();
@@ -1548,6 +1574,7 @@ var ADV_DATA = [
 
   /* ================= 初期化 ================= */
   renderModeChips();
+  renderQuizCountChips();
   renderPosChips();
   renderGradeChips();
   renderListPosChips();
