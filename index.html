@@ -19,6 +19,7 @@
     --red-soft:#F3DFDA;
     --green:#3C7A5A;
     --margin-red:#C1544A;
+    --blue:#2E6A8E;
   }
   *{box-sizing:border-box;}
   body{
@@ -68,6 +69,33 @@
     margin-bottom:18px;
   }
   .panel h2{font-size:15px;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+
+  .intro-banner{
+    background:var(--paper-alt);
+    border:1.5px dashed var(--red);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:20px;
+    font-size:13px;
+    color:var(--ink);
+    line-height:1.7;
+  }
+  .intro-banner b{color:var(--red);}
+
+  .step{margin-bottom:24px;}
+  .step:last-child{margin-bottom:0;}
+  .step-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .step-num{
+    width:26px;height:26px;border-radius:50%;
+    background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:13.5px;flex:0 0 auto;
+    font-family:"Shippori Mincho",serif;
+  }
+  .step-title{font-size:15.5px;font-weight:700;color:var(--ink);}
+  .step-hint{font-size:12px;color:var(--ink-soft);margin:2px 0 12px 36px;line-height:1.6;}
+
+  button.big{padding:14px 28px;font-size:16px;border-radius:11px;}
   .panel h2::before{content:"";width:6px;height:6px;background:var(--red);border-radius:50%;display:inline-block;}
   .row{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start;}
   .field-group{display:flex;flex-direction:column;gap:8px;}
@@ -133,6 +161,17 @@
   button.primary{background:var(--ink);color:#fff;}
   button.accent{background:var(--red);border-color:var(--red);color:#fff;}
   button.ghost{border-color:var(--rule-strong);color:var(--ink-soft);}
+  button.blue{background:var(--blue);border-color:var(--blue);color:#fff;}
+  button.blue-outline{background:#fff;border-color:var(--blue);color:var(--blue);}
+
+  .action-block{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .action-divider{
+    display:flex;align-items:center;gap:10px;
+    margin:12px 0;font-size:11.5px;color:var(--ink-soft);
+  }
+  .action-divider::before,.action-divider::after{
+    content:"";flex:1 1 auto;height:1px;background:var(--rule);
+  }
   button:disabled{opacity:.4;cursor:not-allowed;}
   button.small{padding:5px 11px;font-size:12px;border-radius:7px;}
 
@@ -341,7 +380,7 @@
     .q-list{padding:0 8mm 2px 12mm;}
     .answer-key{padding:0 8mm 10px 12mm;}
     .answer-key-inner{padding-top:8px;}
-    body.include-answers .answer-key{display:block;page-break-before:always;}
+    .answer-key{display:block !important;page-break-before:always;}
     .q-row{
       display:grid;
       grid-template-columns: 20px 74px 128px 1fr 48px;
@@ -454,39 +493,52 @@
 
   <div id="view-test">
   <section class="panel no-print">
-    <h2>出題設定</h2>
-    <div class="row">
-      <div class="field-group">
-        <div class="field-label">出題形式</div>
-        <div class="chip-set" id="mode-chips"></div>
-      </div>
-      <div class="field-group">
-        <div class="field-label">問題数</div>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <div class="chip-set" id="quiz-count-chips"></div>
-          <input type="number" id="quiz-count" value="15" min="1" max="734" style="width:80px;font-size:14px;padding:8px 10px;border:1.4px solid var(--rule-strong);border-radius:7px;font-family:inherit;">
+    <div class="step">
+      <div class="step-head"><span class="step-num">1</span><span class="step-title">設定を選ぶ（そのままでもOK）</span></div>
+      <div class="step-hint">出題形式・問題数・品詞・学年をお好みで変更できます。迷ったら変更しなくて大丈夫です。</div>
+      <div class="row">
+        <div class="field-group">
+          <div class="field-label">出題形式</div>
+          <div class="chip-set" id="mode-chips"></div>
         </div>
-      </div>
-      <div class="field-group">
-        <div class="field-label">出題する品詞</div>
-        <div class="chip-set" id="pos-chips"></div>
-      </div>
-      <div class="field-group">
-        <div class="field-label">出題する学年</div>
-        <div class="chip-set" id="grade-chips"></div>
+        <div class="field-group">
+          <div class="field-label">問題数</div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div class="chip-set" id="quiz-count-chips"></div>
+            <input type="number" id="quiz-count" value="15" min="1" max="734" style="width:80px;font-size:14px;padding:8px 10px;border:1.4px solid var(--rule-strong);border-radius:7px;font-family:inherit;">
+          </div>
         </div>
+        <div class="field-group">
+          <div class="field-label">出題する品詞</div>
+          <div class="chip-set" id="pos-chips"></div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">出題する学年</div>
+          <div class="chip-set" id="grade-chips"></div>
+          </div>
+      </div>
+      <div class="count-note" id="pool-count" style="margin-top:10px;"></div>
     </div>
-    <div class="count-note" id="pool-count" style="margin-top:10px;"></div>
-    <div class="btn-row">
-      <button class="primary" id="btn-generate">テストを作成する</button>
-      <label class="chip" style="display:flex;align-items:center;gap:6px;" id="answers-toggle-wrap">
-        <input type="checkbox" id="answers-toggle"> 印刷時に解答一覧を含める
-      </label>
-      <button class="ghost" id="btn-print" disabled>この問題を印刷する</button>
-      <span style="display:flex;align-items:center;gap:6px;">
+
+    <div class="step">
+      <div class="step-head"><span class="step-num">2</span><span class="step-title">テストを作成する</span></div>
+      <div class="btn-row">
+        <button class="primary big" id="btn-generate">✎ テストを作成する</button>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><span class="step-num">3</span><span class="step-title">印刷 または PDFで保存する</span></div>
+      <div class="step-hint">テストを作成すると使えるようになります。解答一覧は自動で最後のページに追加されます。</div>
+      <div class="action-block">
+        <button class="blue" id="btn-print" disabled>🖨 この問題を印刷する</button>
+      </div>
+      <div class="action-divider">または</div>
+      <div class="action-block">
+        <span class="field-label" style="margin-right:4px;">PDFの日付：</span>
         <input type="date" id="pdf-date" style="font-size:13.5px;padding:8px 10px;border:1.4px solid var(--rule-strong);border-radius:7px;font-family:inherit;">
-        <button class="ghost" id="btn-pdf" disabled>PDFとして保存する</button>
-      </span>
+        <button class="blue-outline" id="btn-pdf" disabled>📄 PDFとして保存する</button>
+      </div>
     </div>
   </section>
 
@@ -576,28 +628,41 @@
 
   <div id="view-irregular" style="display:none;">
     <section class="panel no-print">
-      <h2>不規則動詞テストの設定</h2>
-      <div class="row">
-        <div class="field-group">
-          <div class="field-label">出題数</div>
-          <div class="chip-set" id="irr-count-chips"></div>
-        </div>
-        <div class="field-group">
-          <div class="field-label">空欄にする項目（原形は常に表示）</div>
-          <div class="chip-set" id="irr-col-chips"></div>
+      <div class="step">
+        <div class="step-head"><span class="step-num">1</span><span class="step-title">設定を選ぶ（そのままでもOK）</span></div>
+        <div class="step-hint">「出題する項目」は、テストで答えさせたい活用形にチェックを入れてください（複数選択できます）。</div>
+        <div class="row">
+          <div class="field-group">
+            <div class="field-label">出題数</div>
+            <div class="chip-set" id="irr-count-chips"></div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">出題する項目（原形は常に表示）</div>
+            <div class="chip-set" id="irr-col-chips"></div>
+          </div>
         </div>
       </div>
-      <div class="btn-row">
-        <button class="primary" id="btn-irr-generate">テストを作成する</button>
-        <label class="chip" style="display:flex;align-items:center;gap:6px;">
-          <input type="checkbox" id="irr-answers-toggle"> 印刷時に解答一覧を含める
-        </label>
-        <button class="ghost" id="btn-irr-print" disabled>この問題を印刷する</button>
-        <span style="display:flex;align-items:center;gap:6px;">
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">2</span><span class="step-title">テストを作成する</span></div>
+        <div class="btn-row">
+          <button class="primary big" id="btn-irr-generate">✎ テストを作成する</button>
+          <button class="ghost" id="btn-irr-study">学習用一覧を表示（辞書順・全70語）</button>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">3</span><span class="step-title">印刷 または PDFで保存する</span></div>
+        <div class="step-hint">テストを作成すると使えるようになります。解答一覧は自動で最後のページに追加されます。</div>
+        <div class="action-block">
+          <button class="blue" id="btn-irr-print" disabled>🖨 この問題を印刷する</button>
+        </div>
+        <div class="action-divider">または</div>
+        <div class="action-block">
+          <span class="field-label" style="margin-right:4px;">PDFの日付：</span>
           <input type="date" id="irr-pdf-date" style="font-size:13.5px;padding:8px 10px;border:1.4px solid var(--rule-strong);border-radius:7px;font-family:inherit;">
-          <button class="ghost" id="btn-irr-pdf" disabled>PDFとして保存する</button>
-        </span>
-        <button class="ghost" id="btn-irr-study">学習用一覧を表示（辞書順・全70語）</button>
+          <button class="blue-outline" id="btn-irr-pdf" disabled>📄 PDFとして保存する</button>
+        </div>
       </div>
     </section>
 
@@ -1338,11 +1403,10 @@ var ADV_DATA = [
     var y = parts[0], m = parseInt(parts[1],10), d = parseInt(parts[2],10);
     return y+"."+m+"."+d+"～";
   }
-  function exportAsPdf(dateInputId, namePrefix, answersCheckboxId){
+  function exportAsPdf(dateInputId, namePrefix){
     var dateVal = document.getElementById(dateInputId).value;
     var dateLabel = formatDateForFilename(dateVal);
-    var includesAnswers = answersCheckboxId && document.getElementById(answersCheckboxId).checked;
-    var fullPrefix = namePrefix + (includesAnswers ? "・解答" : "");
+    var fullPrefix = namePrefix + "・解答";
     var filename = dateLabel ? (fullPrefix+"（"+dateLabel+"）") : fullPrefix;
     document.title = filename;
     window.print();
@@ -1356,14 +1420,7 @@ var ADV_DATA = [
     if(d2) d2.value = iso;
   })();
   document.getElementById("btn-pdf").addEventListener("click", function(){
-    exportAsPdf("pdf-date", "英語小テスト問題", "answers-toggle");
-  });
-
-  document.getElementById("answers-toggle").addEventListener("change", function(e){
-    document.body.classList.toggle("include-answers", e.target.checked);
-  });
-  document.getElementById("irr-answers-toggle").addEventListener("change", function(e){
-    document.body.classList.toggle("include-answers", e.target.checked);
+    exportAsPdf("pdf-date", "英語小テスト問題");
   });
 
   /* ================= 不規則動詞テスト ================= */
@@ -1404,7 +1461,7 @@ var ADV_DATA = [
 
   function generateIrregularTest(){
     var activeCols = IRR_COLUMNS.filter(function(c){ return state.irrCols.has(c.key); });
-    if(activeCols.length===0){ alert("空欄にする項目を1つ以上選んでください。"); return; }
+    if(activeCols.length===0){ alert("出題する項目を1つ以上選んでください。"); return; }
     var n = (state.irrCount==="all") ? IRREGULAR_VERB_DATA.length : Math.min(state.irrCount, IRREGULAR_VERB_DATA.length);
     state.irrRows = shuffle(IRREGULAR_VERB_DATA).slice(0, n);
     state.irrGraded = false;
@@ -1518,20 +1575,20 @@ var ADV_DATA = [
       return a.base.toLowerCase().localeCompare(b.base.toLowerCase());
     });
 
+    // 「意味」は常に含め、それ以外は「空欄にする項目」で選ばれた変形のみ表示する
+    var formCols = IRR_COLUMNS.filter(function(c){ return c.key !== "ja" && state.irrCols.has(c.key); });
+    var displayCols = [{key:"ja", label:"意味"}].concat(formCols);
+
     var headEl = document.getElementById("irr-table-head");
-    headEl.innerHTML = '<th>#</th><th>原形</th><th>意味</th><th>三人称単数形</th><th>ing形</th><th>過去形</th><th>過去分詞</th>';
+    headEl.innerHTML = '<th>#</th><th>原形</th>' + displayCols.map(function(c){ return '<th>'+c.label+'</th>'; }).join("");
 
     var bodyEl = document.getElementById("irr-table-body");
     bodyEl.innerHTML = sorted.map(function(v, idx){
-      return '<tr>'+
-        '<td>'+(idx+1)+'</td>'+
-        '<td class="base">'+v.base+'</td>'+
-        '<td class="given">'+v.ja+'</td>'+
-        '<td class="given">'+v.third+'</td>'+
-        '<td class="given">'+v.ing+'</td>'+
-        '<td class="given">'+v.past.replace(/\//g," / ")+'</td>'+
-        '<td class="given">'+v.pp.replace(/\//g," / ")+'</td>'+
-      '</tr>';
+      var cells = '<td>'+(idx+1)+'</td><td class="base">'+v.base+'</td>';
+      cells += displayCols.map(function(c){
+        return '<td class="given">'+v[c.key].replace(/\//g," / ")+'</td>';
+      }).join("");
+      return '<tr>'+cells+'</tr>';
     }).join("");
 
     document.getElementById("btn-irr-clear").disabled = true;
@@ -1548,7 +1605,7 @@ var ADV_DATA = [
     window.print();
   });
   document.getElementById("btn-irr-pdf").addEventListener("click", function(){
-    exportAsPdf("irr-pdf-date", "不規則動詞テスト問題", "irr-answers-toggle");
+    exportAsPdf("irr-pdf-date", "不規則動詞テスト問題");
   });
 
   /* ================= タブ切り替え ================= */
