@@ -844,12 +844,17 @@
 
           <div class="detail-section">
             <h3 class="detail-h3">苦手・間違えた単語</h3>
+            <div class="chip-set" id="weak-kind-chips" style="margin-bottom:12px;"></div>
             <div class="cw-form">
-              <input type="text" id="wk-en" placeholder="英単語" class="admin-input" style="width:150px;">
-              <input type="text" id="wk-ja" placeholder="日本語の意味" class="admin-input" style="width:180px;">
+              <input type="text" id="wk-en" placeholder="英単語を入力（例: receive）" class="admin-input" style="width:220px;">
               <button class="primary small" id="btn-add-weak">記録する</button>
             </div>
-            <div class="cw-list" id="weak-list" style="margin-top:10px;"></div>
+            <div class="count-note" id="wk-hint" style="margin-top:6px;">収録済みの単語なら日本語の意味も自動で保存されます。</div>
+            <div class="cw-list" id="weak-list" style="margin-top:12px;"></div>
+            <div class="btn-row" style="margin-top:14px;">
+              <button class="primary" id="btn-weak-test">▶ この苦手単語で小テストを作成</button>
+            </div>
+            <div class="count-note" id="weak-test-hint" style="margin-top:6px;"></div>
           </div>
         </section>
       </div>
@@ -1142,6 +1147,13 @@ var ADV_DATA = [
     .concat(buildBank(NADJ_DATA,"形容動詞","n"))
     .concat(buildBank(ADV_DATA,"副詞","a"));
 
+  // 英単語(小文字) → 日本語 の辞書（小テスト用の単語バンクから作成）
+  var WORD_JA_LOOKUP = {};
+  BUILTIN_BANK.forEach(function(w){
+    var key = w.en.toLowerCase().trim();
+    if(!(key in WORD_JA_LOOKUP)){ WORD_JA_LOOKUP[key] = w.ja; }
+  });
+
   var POS_LIST = ["動詞","形容詞","形容動詞","副詞"];
   var GRADE_LIST = [{id:1,label:"中学1年"},{id:2,label:"中学2年"},{id:3,label:"中学3年"}];
   var LEVEL_LIST = [{id:1,label:"基礎"},{id:2,label:"標準"},{id:3,label:"発展"}];
@@ -1226,6 +1238,11 @@ var ADV_DATA = [
     ["be","is","being","was/were","been","~である・いる"]
   ].map(function(d,i){
     return {id:"irr-"+i, base:d[0], third:d[1], ing:d[2], past:d[3], pp:d[4], ja:d[5]};
+  });
+  // 不規則動詞用：原形(小文字) → 意味 の辞書
+  var IRR_JA_LOOKUP = {};
+  IRREGULAR_VERB_DATA.forEach(function(v){
+    IRR_JA_LOOKUP[v.base.toLowerCase().trim()] = v.ja;
   });
   var IRR_COLUMNS = [
     {key:"ja", label:"意味"},
@@ -1498,6 +1515,7 @@ var ADV_DATA = [
 
   function renderSheet(){
     document.getElementById("sheet-header").style.display = "block";
+    document.querySelector("#sheet-header .sheet-title").innerHTML = '英単語<span class="accent">テスト</span>';
     document.getElementById("stamp").style.display = "none";
     document.getElementById("score-banner").classList.remove("show");
 
@@ -1922,7 +1940,8 @@ var ADV_DATA = [
     students: [],
     scores: [],
     weak: [],
-    currentStudentId: null
+    currentStudentId: null,
+    weakKind: "小テスト"
   };
 
   function adminMsg(elId, text, type){
@@ -2133,6 +2152,8 @@ var ADV_DATA = [
     document.getElementById("student-detail").style.display = "";
     document.getElementById("student-detail").scrollIntoView({behavior:"smooth", block:"start"});
     renderScoreTable();
+    renderWeakKindChips();
+    updateWeakHint();
     renderWeakList();
   }
 
@@ -2190,15 +2211,43 @@ var ADV_DATA = [
     adminSave("得点を記録しました");
   });
 
+  var WEAK_KIND_LIST = ["小テスト", "不規則動詞"];
+  function renderWeakKindChips(){
+    var el = document.getElementById("weak-kind-chips");
+    el.innerHTML = WEAK_KIND_LIST.map(function(k){
+      var active = admin.weakKind === k;
+      return '<button type="button" class="chip mode'+(active?' active':'')+'" data-wkind="'+k+'">'+k+'の苦手単語</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        admin.weakKind = chip.getAttribute("data-wkind");
+        renderWeakKindChips();
+        renderWeakList();
+        updateWeakHint();
+      });
+    });
+  }
+  function updateWeakHint(){
+    var hint = document.getElementById("wk-hint");
+    if(admin.weakKind === "不規則動詞"){
+      hint.textContent = "不規則動詞の原形を入力してください。収録済みなら意味も自動で保存されます。";
+    } else {
+      hint.textContent = "収録済みの単語なら日本語の意味も自動で保存されます。";
+    }
+  }
+
   function renderWeakList(){
     var el = document.getElementById("weak-list");
-    var ws = admin.weak.filter(function(w){ return String(w.studentId)===String(admin.currentStudentId); });
+    var ws = admin.weak.filter(function(w){
+      return String(w.studentId)===String(admin.currentStudentId) && (w.kind||"小テスト")===admin.weakKind;
+    });
     if(ws.length === 0){
-      el.innerHTML = '<span class="cw-empty">まだ記録がありません。</span>';
+      el.innerHTML = '<span class="cw-empty">「'+admin.weakKind+'」の苦手単語はまだありません。</span>';
       return;
     }
     el.innerHTML = ws.map(function(w){
-      return '<span class="cw-tag">'+escapeHtml(w.en)+' - '+escapeHtml(w.ja)+
+      var jaPart = w.ja ? ' - '+escapeHtml(w.ja) : '';
+      return '<span class="cw-tag">'+escapeHtml(w.en)+jaPart+
              '<button data-delwk="'+escapeHtml(String(w.id))+'" title="削除">×</button></span>';
     }).join("");
     Array.prototype.forEach.call(el.querySelectorAll("[data-delwk]"), function(b){
@@ -2206,6 +2255,7 @@ var ADV_DATA = [
         var id = b.getAttribute("data-delwk");
         admin.weak = admin.weak.filter(function(x){ return String(x.id)!==String(id); });
         renderWeakList();
+        renderStudentTable();
         adminSave("削除しました");
       });
     });
@@ -2214,19 +2264,99 @@ var ADV_DATA = [
   document.getElementById("btn-add-weak").addEventListener("click", function(){
     if(!admin.currentStudentId) return;
     var en = document.getElementById("wk-en").value.trim();
-    var ja = document.getElementById("wk-ja").value.trim();
     if(!en){ alert("英単語を入力してください。"); return; }
+    // 収録済み単語なら日本語を自動補完
+    var lookup = (admin.weakKind === "不規則動詞") ? IRR_JA_LOOKUP : WORD_JA_LOOKUP;
+    var ja = lookup[en.toLowerCase()] || "";
     admin.weak.push({
       id: uid("wk"),
       studentId: admin.currentStudentId,
+      kind: admin.weakKind,
       en: en,
       ja: ja,
       date: new Date().toISOString().slice(0,10)
     });
     document.getElementById("wk-en").value = "";
-    document.getElementById("wk-ja").value = "";
     renderWeakList();
+    renderStudentTable();
     adminSave("苦手単語を記録しました");
+  });
+
+  // Enterキーで苦手単語を追加できるように
+  document.getElementById("wk-en").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){ e.preventDefault(); document.getElementById("btn-add-weak").click(); }
+  });
+
+  // 苦手単語から小テストを作成する
+  document.getElementById("btn-weak-test").addEventListener("click", function(){
+    var ws = admin.weak.filter(function(w){
+      return String(w.studentId)===String(admin.currentStudentId) && (w.kind||"小テスト")===admin.weakKind;
+    });
+    if(ws.length === 0){
+      document.getElementById("weak-test-hint").textContent = "「"+admin.weakKind+"」の苦手単語がありません。先に単語を記録してください。";
+      return;
+    }
+    var st = admin.students.filter(function(x){return String(x.id)===String(admin.currentStudentId);})[0];
+    var stName = st ? st.name : "";
+
+    if(admin.weakKind === "不規則動詞"){
+      // 苦手な原形に一致する不規則動詞の行を集める
+      var rows = [];
+      ws.forEach(function(w){
+        var found = IRREGULAR_VERB_DATA.filter(function(v){ return v.base.toLowerCase() === w.en.toLowerCase(); })[0];
+        if(found){ rows.push(found); }
+      });
+      if(rows.length === 0){
+        document.getElementById("weak-test-hint").textContent = "収録済みの不規則動詞と一致する苦手単語がありませんでした。";
+        return;
+      }
+      state.irrRows = shuffle(rows);
+      state.irrGraded = false;
+      document.body.classList.remove("irr-study-mode");
+      var activeCols = IRR_COLUMNS.filter(function(c){ return state.irrCols.has(c.key); });
+      if(activeCols.length === 0){ activeCols = IRR_COLUMNS.slice(); }
+      renderIrregularSheet(activeCols);
+      document.getElementById("btn-irr-clear").disabled = false;
+      document.getElementById("btn-irr-print").disabled = false;
+      document.getElementById("btn-irr-pdf").disabled = false;
+      document.getElementById("irr-bottom-grade-row").style.display = "flex";
+      document.getElementById("irr-sheet-title").innerHTML = (stName?escapeHtml(stName)+'さんの ':'')+'苦手 不規則動詞<span class="accent">テスト</span>';
+      showView("irregular");
+      document.getElementById("irr-sheet").scrollIntoView({behavior:"smooth", block:"start"});
+    } else {
+      // 小テスト：苦手単語からそのまま問題を作る
+      var picked = shuffle(ws.map(function(w){
+        var ja = w.ja || WORD_JA_LOOKUP[w.en.toLowerCase()] || "";
+        var full = BUILTIN_BANK.filter(function(b){ return b.en.toLowerCase()===w.en.toLowerCase(); })[0];
+        return {
+          en: w.en,
+          ja: ja,
+          pos: full ? full.pos : "その他",
+          grade: full ? full.grade : 0,
+          level: full ? full.level : 0
+        };
+      }).filter(function(w){ return w.ja; }));
+      if(picked.length === 0){
+        document.getElementById("weak-test-hint").textContent = "日本語の意味が分かる苦手単語がありませんでした。";
+        return;
+      }
+      state.questions = picked.map(function(w){
+        var dir;
+        if(state.mode==="mix"){ dir = Math.random()<0.5 ? "en2ja" : "ja2en"; }
+        else { dir = state.mode; }
+        return {word:w, direction:dir};
+      });
+      state.requestedCount = picked.length;
+      state.graded = false;
+      renderSheet();
+      document.querySelector("#sheet-header .sheet-title").innerHTML = (stName?escapeHtml(stName)+'さんの ':'')+'苦手 英単語<span class="accent">テスト</span>';
+      document.getElementById("btn-clear").disabled = false;
+      document.getElementById("btn-print").disabled = false;
+      document.getElementById("btn-pdf").disabled = false;
+      document.getElementById("bottom-grade-row").style.display = "flex";
+      showView("test");
+      document.getElementById("sheet").scrollIntoView({behavior:"smooth", block:"start"});
+    }
   });
 
   /* ================= 初期化 ================= */
