@@ -231,6 +231,13 @@
     display:flex;gap:26px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--ink-soft);
   }
   .sheet-meta span{border-bottom:1px solid var(--rule-strong);padding-bottom:2px;min-width:110px;display:inline-block;}
+  .sheet-comment{
+    margin-top:12px;font-family:'Yomogi', var(--font-body, sans-serif);
+    font-size:15px;line-height:1.55;color:#3a3a3a;white-space:pre-wrap;
+    border:1.5px dashed var(--rule-strong);border-radius:10px;
+    padding:8px 14px;background:rgba(0,0,0,.02);max-width:640px;
+  }
+  .sheet-comment::before{content:"✎ ";opacity:.6;}
   .stamp{
     position:absolute;right:30px;top:100px;
     width:70px;height:70px;border-radius:50%;
@@ -384,6 +391,7 @@
     .sheet-title{font-size:21px;line-height:1.2;}
     .sheet-meta{margin-top:8px;gap:18px;font-size:11px;line-height:1.2;}
     .sheet-meta span{min-width:85px;padding-bottom:2px;}
+    .sheet-comment{margin-top:8px;font-size:12px;line-height:1.4;padding:5px 10px;background:none;}
     .stamp{width:44px;height:44px;right:8mm;top:48px;border-width:2px;}
     .stamp .num{font-size:15px;line-height:1;}
     .stamp .lbl{font-size:7px;line-height:1;}
@@ -565,13 +573,21 @@
             <div class="chip-set" id="tb-grade-chips"></div>
           </div>
           <div class="field-group">
-            <div class="field-label">出題する課（複数選択できます）</div>
+            <div class="field-label">Unit（大きな範囲）</div>
+            <div class="chip-set" id="tb-unit-chips"></div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">詳細（複数選択できます）</div>
             <div class="chip-set" id="tb-lesson-chips"></div>
           </div>
         </div>
         <div class="count-note" id="tb-status" style="margin-top:8px;"></div>
       </div>
       <div class="count-note general-only" id="pool-count" style="margin-top:10px;"></div>
+      <div class="field-group" style="margin-top:12px;">
+        <div class="field-label">コメント（印刷時に名前の下に表示されます・空欄なら非表示）</div>
+        <input type="text" class="admin-input comment-input" placeholder="例：今週の範囲 Unit 3　がんばろう！" maxlength="60" style="width:100%;max-width:560px;">
+      </div>
     </div>
 
     <div class="step">
@@ -603,6 +619,7 @@
       <div class="sheet-meta">
         <span>名前：　　　　　　　　　　　　　</span>
       </div>
+      <div class="sheet-comment" id="sheet-comment" style="display:none;"></div>
       <div class="stamp" id="stamp" style="display:none;">
         <div class="num" id="stamp-num">-</div>
         <div class="lbl">/ 30</div>
@@ -704,6 +721,10 @@
             <div class="chip-set" id="irr-col-chips"></div>
           </div>
         </div>
+        <div class="field-group" style="margin-top:12px;">
+          <div class="field-label">コメント（印刷時に名前の下に表示されます・空欄なら非表示）</div>
+          <input type="text" class="admin-input comment-input" placeholder="例：不規則動詞　今週のまとめ　がんばろう！" maxlength="60" style="width:100%;max-width:560px;">
+        </div>
       </div>
 
       <div class="step">
@@ -736,6 +757,7 @@
         <div class="sheet-meta">
           <span>名前：　　　　　　　　　　　　　</span>
         </div>
+        <div class="sheet-comment" id="irr-sheet-comment" style="display:none;"></div>
         <div class="stamp" id="irr-stamp" style="display:none;">
           <div class="num" id="irr-stamp-num">-</div>
           <div class="lbl">/ -</div>
@@ -906,7 +928,7 @@
      下の "" の中に貼り付けてください。
      空のままにすると、教科書準拠モードは「未設定」と表示されます。
      =========================================================== */
-  var WORDS_URL = "https://script.google.com/macros/s/AKfycbyaivGIZx92eVVKsx9rlw8iFqfaEY5J3KClX-15YZnz5kkAGT2wercSTM9LeMoq70bS/exec";
+  var WORDS_URL = "";
   /* ▲▲▲ 設定はここまで ▲▲▲ */
 
   /* ================= 単語データ ================= */
@@ -1306,7 +1328,9 @@ var ADV_DATA = [
     tbLoaded: false,
     tbTextbook: "",           // 選択中の教科書名
     tbGrade: null,            // 選択中の学年
-    tbLessons: new Set()      // 選択中の課（複数可）
+    tbUnit: "",               // 選択中のUnit（大きな範囲）
+    tbLessons: new Set(),     // 選択中の詳細（Unit 3-1 など・複数可）
+    comment: ""               // 印刷時に名前の下に表示するコメント
   };
 
   function fullBank(){ return BUILTIN_BANK.concat(state.customWords); }
@@ -1562,6 +1586,22 @@ var ADV_DATA = [
     return out;
   }
   function gradeLabel(g){ return (g==null) ? "指定なし" : ("中学"+g+"年"); }
+  // "Unit 3-1" -> "Unit 3" / "Let's Read 1-2" -> "Let's Read 1" / "Unit 1" -> "Unit 1"
+  function lessonGroup(lesson){
+    var m = String(lesson).match(/^(.*?)[\-‐–—ー]\s*\d+\s*$/);
+    return m ? m[1].trim() : String(lesson).trim();
+  }
+  function tbUnitList(tb, grade){
+    var seen = {}, out = [];
+    tbLessonList(tb, grade).forEach(function(ls){
+      var g = lessonGroup(ls);
+      if(!seen[g]){ seen[g]=1; out.push(g); }
+    });
+    return out;
+  }
+  function tbDetailList(tb, grade, unit){
+    return tbLessonList(tb, grade).filter(function(ls){ return lessonGroup(ls)===unit; });
+  }
 
   async function loadTextbookWords(){
     if(!WORDS_URL){ state.tbLoaded = false; updateTbStatus(); return; }
@@ -1597,9 +1637,12 @@ var ADV_DATA = [
     if(tbs.length && (!state.tbTextbook || tbs.indexOf(state.tbTextbook)<0)){ state.tbTextbook = tbs[0]; }
     var grs = tbGradeList(state.tbTextbook);
     state.tbGrade = grs.length ? grs[0] : null;
+    var units = tbUnitList(state.tbTextbook, state.tbGrade);
+    state.tbUnit = units.length ? units[0] : "";
     state.tbLessons = new Set();
     renderTbTextbookChips();
     renderTbGradeChips();
+    renderTbUnitChips();
     renderTbLessonChips();
     updateTbStatus();
   }
@@ -1640,9 +1683,12 @@ var ADV_DATA = [
         state.tbTextbook = chip.getAttribute("data-tb");
         var grs = tbGradeList(state.tbTextbook);
         state.tbGrade = grs.length ? grs[0] : null;
+        var units = tbUnitList(state.tbTextbook, state.tbGrade);
+        state.tbUnit = units.length ? units[0] : "";
         state.tbLessons = new Set();
         renderTbTextbookChips();
         renderTbGradeChips();
+        renderTbUnitChips();
         renderTbLessonChips();
         updateTbStatus();
       });
@@ -1661,8 +1707,29 @@ var ADV_DATA = [
       chip.addEventListener("click", function(){
         var v = chip.getAttribute("data-grade");
         state.tbGrade = (v==="null") ? null : parseInt(v,10);
+        var units = tbUnitList(state.tbTextbook, state.tbGrade);
+        state.tbUnit = units.length ? units[0] : "";
         state.tbLessons = new Set();
         renderTbGradeChips();
+        renderTbUnitChips();
+        renderTbLessonChips();
+        updateTbStatus();
+      });
+    });
+  }
+  function renderTbUnitChips(){
+    var el = document.getElementById("tb-unit-chips");
+    if(!el) return;
+    var units = tbUnitList(state.tbTextbook, state.tbGrade);
+    if(units.length===0){ el.innerHTML = '<span class="count-note" style="margin:0;">（この学年のUnitがありません）</span>'; return; }
+    if(units.indexOf(state.tbUnit)<0){ state.tbUnit = units[0]; }
+    el.innerHTML = units.map(function(u){
+      return '<button type="button" class="chip mode'+(state.tbUnit===u?' active':'')+'" data-unit="'+escapeHtml(u)+'">'+escapeHtml(u)+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        state.tbUnit = chip.getAttribute("data-unit");
+        renderTbUnitChips();
         renderTbLessonChips();
         updateTbStatus();
       });
@@ -1671,16 +1738,28 @@ var ADV_DATA = [
   function renderTbLessonChips(){
     var el = document.getElementById("tb-lesson-chips");
     if(!el) return;
-    var lessons = tbLessonList(state.tbTextbook, state.tbGrade);
-    if(lessons.length===0){ el.innerHTML = '<span class="count-note" style="margin:0;">（この学年の課がありません）</span>'; return; }
-    el.innerHTML = lessons.map(function(ls){
+    var details = tbDetailList(state.tbTextbook, state.tbGrade, state.tbUnit);
+    if(details.length===0){ el.innerHTML = '<span class="count-note" style="margin:0;">（Unitを選ぶと詳細が表示されます）</span>'; return; }
+    var allChecked = details.every(function(ls){ return state.tbLessons.has(ls); });
+    var html = "";
+    // 「すべて」チップ（このUnitの詳細をまとめて選択／解除）
+    if(details.length > 1){
+      html += '<label class="chip-checkbox'+(allChecked?' active':'')+'"><input type="checkbox" data-all="1"'+(allChecked?' checked':'')+'>すべて</label>';
+    }
+    html += details.map(function(ls){
       var checked = state.tbLessons.has(ls);
       return '<label class="chip-checkbox'+(checked?' active':'')+'"><input type="checkbox" data-lesson="'+escapeHtml(ls)+'"'+(checked?' checked':'')+'>'+escapeHtml(ls)+'</label>';
     }).join("");
+    el.innerHTML = html;
     Array.prototype.forEach.call(el.querySelectorAll("input[type=checkbox]"), function(cb){
       cb.addEventListener("change", function(){
-        var ls = cb.getAttribute("data-lesson");
-        if(cb.checked) state.tbLessons.add(ls); else state.tbLessons.delete(ls);
+        if(cb.getAttribute("data-all")){
+          if(cb.checked){ details.forEach(function(ls){ state.tbLessons.add(ls); }); }
+          else { details.forEach(function(ls){ state.tbLessons.delete(ls); }); }
+        } else {
+          var ls = cb.getAttribute("data-lesson");
+          if(cb.checked) state.tbLessons.add(ls); else state.tbLessons.delete(ls);
+        }
         renderTbLessonChips();
         updateTbStatus();
       });
@@ -1698,6 +1777,29 @@ var ADV_DATA = [
       return w.textbook===state.tbTextbook && (state.tbGrade==null || w.grade===state.tbGrade) && state.tbLessons.has(w.lesson) && w.ja && w.en;
     }).length;
     el.textContent = "選択中の範囲：" + n + " 語（この中から出題されます）";
+  }
+
+  /* ================= コメント（印刷時に名前の下に表示） ================= */
+  function applyComment(){
+    var txt = (state.comment || "").trim();
+    ["sheet-comment","irr-sheet-comment"].forEach(function(id){
+      var el = document.getElementById(id);
+      if(!el) return;
+      el.textContent = txt;
+      el.style.display = txt ? "block" : "none";
+    });
+    // 入力欄どうしを同期（フォーカス中のものは触らない）
+    Array.prototype.forEach.call(document.querySelectorAll(".comment-input"), function(inp){
+      if(inp !== document.activeElement && inp.value !== state.comment){ inp.value = state.comment; }
+    });
+  }
+  function wireCommentInputs(){
+    Array.prototype.forEach.call(document.querySelectorAll(".comment-input"), function(inp){
+      inp.addEventListener("input", function(){
+        state.comment = inp.value;
+        applyComment();
+      });
+    });
   }
 
   function currentTestPool(){
@@ -2602,6 +2704,8 @@ var ADV_DATA = [
   renderRangeModeChips();
   applyRangeMode();
   loadTextbookWords();
+  wireCommentInputs();
+  applyComment();
 })();
 </script>
 </body>
