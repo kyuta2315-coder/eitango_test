@@ -525,6 +525,10 @@
     <div class="step">
       <div class="step-head"><span class="step-num">1</span><span class="step-title">設定を選ぶ（そのままでもOK）</span></div>
       <div class="step-hint">出題形式・問題数・品詞・学年をお好みで変更できます。迷ったら変更しなくて大丈夫です。</div>
+      <div class="field-group" style="margin-bottom:8px;">
+        <div class="field-label">出題範囲</div>
+        <div class="chip-set" id="range-mode-chips"></div>
+      </div>
       <div class="row">
         <div class="field-group">
           <div class="field-label">出題形式</div>
@@ -537,20 +541,37 @@
             <input type="number" id="quiz-count" value="15" min="1" max="734" style="width:80px;font-size:14px;padding:8px 10px;border:1.4px solid var(--rule-strong);border-radius:7px;font-family:inherit;">
           </div>
         </div>
-        <div class="field-group">
+        <div class="field-group general-only">
           <div class="field-label">出題する品詞</div>
           <div class="chip-set" id="pos-chips"></div>
         </div>
-        <div class="field-group">
+        <div class="field-group general-only">
           <div class="field-label">出題する学年</div>
           <div class="chip-set" id="grade-chips"></div>
           </div>
-        <div class="field-group">
+        <div class="field-group general-only">
           <div class="field-label">難易度レベル</div>
           <div class="chip-set" id="level-chips"></div>
           </div>
       </div>
-      <div class="count-note" id="pool-count" style="margin-top:10px;"></div>
+      <div id="textbook-filters" style="display:none;">
+        <div class="row">
+          <div class="field-group">
+            <div class="field-label">教科書</div>
+            <div class="chip-set" id="tb-textbook-chips"></div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">学年</div>
+            <div class="chip-set" id="tb-grade-chips"></div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">出題する課（複数選択できます）</div>
+            <div class="chip-set" id="tb-lesson-chips"></div>
+          </div>
+        </div>
+        <div class="count-note" id="tb-status" style="margin-top:8px;"></div>
+      </div>
+      <div class="count-note general-only" id="pool-count" style="margin-top:10px;"></div>
     </div>
 
     <div class="step">
@@ -876,6 +897,16 @@
      例: var ADMIN_URL = "https://script.google.com/macros/s/xxxx/exec";
      =========================================================== */
   var ADMIN_URL = "https://script.google.com/macros/s/AKfycbygTc2DNRbfcNxVe5Wx-TNiuYjgtNG7sfK8LVgD1AVrIQ18bz4IbaPiX-Sv0Fa9rglI/exec";
+  /* ▲▲▲ 設定はここまで ▲▲▲ */
+
+  /* ===========================================================
+     ▼▼▼ 教科書準拠 単語データの設定（別スプレッドシート用）▼▼▼
+     教科書準拠の単語を入れる「単語専用スプレッドシート」で発行した
+     ウェブアプリのURL（gas-words.gs をデプロイして得たURL）を
+     下の "" の中に貼り付けてください。
+     空のままにすると、教科書準拠モードは「未設定」と表示されます。
+     =========================================================== */
+  var WORDS_URL = "";
   /* ▲▲▲ 設定はここまで ▲▲▲ */
 
   /* ================= 単語データ ================= */
@@ -1269,7 +1300,13 @@ var ADV_DATA = [
     irrCount: 20,
     irrCols: new Set(["third","ing","past","pp","ja"]),
     irrRows: [],
-    irrGraded: false
+    irrGraded: false,
+    rangeMode: "general",     // "general"（一般プール） or "textbook"（教科書準拠）
+    textbookWords: [],        // スプレッドシートから読み込んだ教科書準拠の単語
+    tbLoaded: false,
+    tbTextbook: "",           // 選択中の教科書名
+    tbGrade: null,            // 選択中の学年
+    tbLessons: new Set()      // 選択中の課（複数可）
   };
 
   function fullBank(){ return BUILTIN_BANK.concat(state.customWords); }
@@ -1491,9 +1528,200 @@ var ADV_DATA = [
   });
 
   /* ================= テスト生成 ================= */
+  /* ================= 教科書準拠の単語（別スプレッドシート） ================= */
+  var RANGE_LIST = [
+    {id:"general",  label:"一般プール（収録単語）"},
+    {id:"textbook", label:"教科書準拠"}
+  ];
+
+  function tbTextbookList(){
+    var seen = {}, out = [];
+    state.textbookWords.forEach(function(w){ if(w.textbook && !seen[w.textbook]){ seen[w.textbook]=1; out.push(w.textbook); } });
+    return out;
+  }
+  function tbGradeList(tb){
+    var seen = {}, out = [];
+    state.textbookWords.forEach(function(w){
+      if(w.textbook!==tb) return;
+      var key = (w.grade==null) ? "null" : String(w.grade);
+      if(!seen[key]){ seen[key]=1; out.push(w.grade); }
+    });
+    out.sort(function(a,b){
+      if(a==null) return 1; if(b==null) return -1; return a-b;
+    });
+    return out;
+  }
+  function tbLessonList(tb, grade){
+    var seen = {}, out = [];
+    state.textbookWords.forEach(function(w){
+      if(w.textbook!==tb) return;
+      if(grade!=null && w.grade!==grade) return;
+      if(grade==null && w.grade!=null) return;
+      if(w.lesson && !seen[w.lesson]){ seen[w.lesson]=1; out.push(w.lesson); }
+    });
+    return out;
+  }
+  function gradeLabel(g){ return (g==null) ? "指定なし" : ("中学"+g+"年"); }
+
+  async function loadTextbookWords(){
+    if(!WORDS_URL){ state.tbLoaded = false; updateTbStatus(); return; }
+    updateTbStatus("loading");
+    try{
+      var res = await fetch(WORDS_URL, { method:"GET" });
+      var data = await res.json();
+      var rows = (data && data.words) ? data.words : (Array.isArray(data) ? data : []);
+      state.textbookWords = rows.map(function(r, i){
+        var gm = String(r.grade==null ? "" : r.grade).match(/[123]/);
+        var lv = String(r.level==null ? "" : r.level);
+        var lvNum = 2;
+        if(/基礎/.test(lv)) lvNum = 1; else if(/発展/.test(lv)) lvNum = 3;
+        else if(/[123]/.test(lv)) lvNum = parseInt(lv.match(/[123]/)[0],10);
+        return {
+          id: "tb-"+i,
+          textbook: String(r.textbook==null?"":r.textbook).trim(),
+          grade: gm ? parseInt(gm[0],10) : null,
+          lesson: String(r.lesson==null?"":r.lesson).trim(),
+          en: String(r.en==null?"":r.en).trim(),
+          ja: String(r.ja==null?"":r.ja).trim(),
+          pos: String(r.pos==null?"":r.pos).trim(),
+          level: lvNum,
+          note: String(r.note==null?"":r.note).trim(),
+          custom: false
+        };
+      }).filter(function(w){ return w.textbook && w.en; });
+      state.tbLoaded = true;
+    }catch(e){
+      state.tbLoaded = false;
+    }
+    var tbs = tbTextbookList();
+    if(tbs.length && (!state.tbTextbook || tbs.indexOf(state.tbTextbook)<0)){ state.tbTextbook = tbs[0]; }
+    var grs = tbGradeList(state.tbTextbook);
+    state.tbGrade = grs.length ? grs[0] : null;
+    state.tbLessons = new Set();
+    renderTbTextbookChips();
+    renderTbGradeChips();
+    renderTbLessonChips();
+    updateTbStatus();
+  }
+
+  function renderRangeModeChips(){
+    var el = document.getElementById("range-mode-chips");
+    if(!el) return;
+    el.innerHTML = RANGE_LIST.map(function(m){
+      return '<button type="button" class="chip mode'+(state.rangeMode===m.id?' active':'')+'" data-range="'+m.id+'">'+m.label+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        state.rangeMode = chip.getAttribute("data-range");
+        renderRangeModeChips();
+        applyRangeMode();
+      });
+    });
+  }
+  function applyRangeMode(){
+    var isTb = state.rangeMode === "textbook";
+    Array.prototype.forEach.call(document.querySelectorAll(".general-only"), function(el){
+      el.style.display = isTb ? "none" : "";
+    });
+    var tf = document.getElementById("textbook-filters");
+    if(tf) tf.style.display = isTb ? "" : "none";
+    if(isTb) updateTbStatus();
+  }
+  function renderTbTextbookChips(){
+    var el = document.getElementById("tb-textbook-chips");
+    if(!el) return;
+    var tbs = tbTextbookList();
+    if(tbs.length===0){ el.innerHTML = '<span class="count-note" style="margin:0;">（単語未登録）</span>'; return; }
+    el.innerHTML = tbs.map(function(t){
+      return '<button type="button" class="chip mode'+(state.tbTextbook===t?' active':'')+'" data-tb="'+escapeHtml(t)+'">'+escapeHtml(t)+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        state.tbTextbook = chip.getAttribute("data-tb");
+        var grs = tbGradeList(state.tbTextbook);
+        state.tbGrade = grs.length ? grs[0] : null;
+        state.tbLessons = new Set();
+        renderTbTextbookChips();
+        renderTbGradeChips();
+        renderTbLessonChips();
+        updateTbStatus();
+      });
+    });
+  }
+  function renderTbGradeChips(){
+    var el = document.getElementById("tb-grade-chips");
+    if(!el) return;
+    var grs = tbGradeList(state.tbTextbook);
+    if(grs.length===0){ el.innerHTML = ""; return; }
+    el.innerHTML = grs.map(function(g){
+      var val = (g==null) ? "null" : String(g);
+      return '<button type="button" class="chip mode'+(String(state.tbGrade)===val?' active':'')+'" data-grade="'+val+'">'+gradeLabel(g)+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        var v = chip.getAttribute("data-grade");
+        state.tbGrade = (v==="null") ? null : parseInt(v,10);
+        state.tbLessons = new Set();
+        renderTbGradeChips();
+        renderTbLessonChips();
+        updateTbStatus();
+      });
+    });
+  }
+  function renderTbLessonChips(){
+    var el = document.getElementById("tb-lesson-chips");
+    if(!el) return;
+    var lessons = tbLessonList(state.tbTextbook, state.tbGrade);
+    if(lessons.length===0){ el.innerHTML = '<span class="count-note" style="margin:0;">（この学年の課がありません）</span>'; return; }
+    el.innerHTML = lessons.map(function(ls){
+      var checked = state.tbLessons.has(ls);
+      return '<label class="chip-checkbox'+(checked?' active':'')+'"><input type="checkbox" data-lesson="'+escapeHtml(ls)+'"'+(checked?' checked':'')+'>'+escapeHtml(ls)+'</label>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll("input[type=checkbox]"), function(cb){
+      cb.addEventListener("change", function(){
+        var ls = cb.getAttribute("data-lesson");
+        if(cb.checked) state.tbLessons.add(ls); else state.tbLessons.delete(ls);
+        renderTbLessonChips();
+        updateTbStatus();
+      });
+    });
+  }
+  function updateTbStatus(mode){
+    var el = document.getElementById("tb-status");
+    if(!el) return;
+    if(!WORDS_URL){ el.textContent = "教科書準拠の単語スプレッドシートが未設定です。コード内の WORDS_URL にウェブアプリのURLを設定してください。"; return; }
+    if(mode==="loading"){ el.textContent = "単語を読み込み中..."; return; }
+    if(!state.tbLoaded){ el.textContent = "単語を読み込めませんでした。URLの設定と、ウェブアプリの公開範囲（全員）をご確認ください。"; return; }
+    if(state.textbookWords.length===0){ el.textContent = "スプレッドシートに単語がまだありません。1行目の見出しの下に単語を追加してください。"; return; }
+    if(state.tbLessons.size===0){ el.textContent = "出題する課を選ぶと、対象の単語数が表示されます。（全体で "+state.textbookWords.length+" 語 読み込み済み）"; return; }
+    var n = state.textbookWords.filter(function(w){
+      return w.textbook===state.tbTextbook && (state.tbGrade==null || w.grade===state.tbGrade) && state.tbLessons.has(w.lesson) && w.ja && w.en;
+    }).length;
+    el.textContent = "選択中の範囲：" + n + " 語（この中から出題されます）";
+  }
+
+  function currentTestPool(){
+    if(state.rangeMode === "textbook"){
+      if(!WORDS_URL || !state.tbLoaded){ alert("教科書準拠の単語がまだ読み込まれていません。設定（WORDS_URL）をご確認ください。"); return null; }
+      if(!state.tbTextbook){ alert("教科書を選んでください。"); return null; }
+      if(state.tbLessons.size===0){ alert("出題する課を1つ以上選んでください。"); return null; }
+      var pool = state.textbookWords.filter(function(w){
+        return w.textbook===state.tbTextbook
+          && (state.tbGrade==null || w.grade===state.tbGrade)
+          && state.tbLessons.has(w.lesson)
+          && w.ja && w.en;
+      });
+      if(pool.length===0){ alert("選んだ範囲に、日本語の意味が入った単語がありません。"); return null; }
+      return pool;
+    }
+    var gpool = fullBank().filter(function(w){ return state.selectedPos.has(w.pos) && state.selectedGrade.has(w.grade) && state.selectedLevel.has(w.level); });
+    if(gpool.length===0){ alert("出題する品詞・学年を1つ以上選んでください。"); return null; }
+    return gpool;
+  }
+
   function generateQuestions(){
-    var pool = fullBank().filter(function(w){ return state.selectedPos.has(w.pos) && state.selectedGrade.has(w.grade) && state.selectedLevel.has(w.level); });
-    if(pool.length===0){ alert("出題する品詞・学年を1つ以上選んでください。"); return; }
+    var pool = currentTestPool();
+    if(!pool) return;
     var countInput = document.getElementById("quiz-count");
     var requested = parseInt(countInput.value, 10);
     if(!requested || requested < 1) requested = 15;
@@ -2371,6 +2599,9 @@ var ADV_DATA = [
   renderIrrCountChips();
   renderIrrColChips();
   loadCustomWords();
+  renderRangeModeChips();
+  applyRangeMode();
+  loadTextbookWords();
 })();
 </script>
 </body>
