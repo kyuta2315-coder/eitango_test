@@ -577,9 +577,13 @@
             <div class="chip-set" id="tb-unit-chips"></div>
           </div>
           <div class="field-group">
-            <div class="field-label">詳細（複数選択できます）</div>
+            <div class="field-label">詳細（複数選択できます・Unitを切り替えても選択は残ります）</div>
             <div class="chip-set" id="tb-lesson-chips"></div>
           </div>
+        </div>
+        <div class="field-group" id="tb-selected-group" style="margin-top:6px;display:none;">
+          <div class="field-label">選択中の範囲（× で外せます）</div>
+          <div class="chip-set" id="tb-selected"></div>
         </div>
         <div class="count-note" id="tb-status" style="margin-top:8px;"></div>
       </div>
@@ -928,7 +932,7 @@
      下の "" の中に貼り付けてください。
      空のままにすると、教科書準拠モードは「未設定」と表示されます。
      =========================================================== */
-  var WORDS_URL = "https://script.google.com/macros/s/AKfycbyaivGIZx92eVVKsx9rlw8iFqfaEY5J3KClX-15YZnz5kkAGT2wercSTM9LeMoq70bS/exec";
+  var WORDS_URL = "";
   /* ▲▲▲ 設定はここまで ▲▲▲ */
 
   /* ================= 単語データ ================= */
@@ -1644,6 +1648,7 @@ var ADV_DATA = [
     renderTbGradeChips();
     renderTbUnitChips();
     renderTbLessonChips();
+    renderTbSelected();
     updateTbStatus();
   }
 
@@ -1690,6 +1695,7 @@ var ADV_DATA = [
         renderTbGradeChips();
         renderTbUnitChips();
         renderTbLessonChips();
+        renderTbSelected();
         updateTbStatus();
       });
     });
@@ -1713,6 +1719,7 @@ var ADV_DATA = [
         renderTbGradeChips();
         renderTbUnitChips();
         renderTbLessonChips();
+        renderTbSelected();
         updateTbStatus();
       });
     });
@@ -1724,13 +1731,17 @@ var ADV_DATA = [
     if(units.length===0){ el.innerHTML = '<span class="count-note" style="margin:0;">（この学年のUnitがありません）</span>'; return; }
     if(units.indexOf(state.tbUnit)<0){ state.tbUnit = units[0]; }
     el.innerHTML = units.map(function(u){
-      return '<button type="button" class="chip mode'+(state.tbUnit===u?' active':'')+'" data-unit="'+escapeHtml(u)+'">'+escapeHtml(u)+'</button>';
+      var det = tbDetailList(state.tbTextbook, state.tbGrade, u);
+      var n = det.filter(function(ls){ return state.tbLessons.has(ls); }).length;
+      var badge = n>0 ? ' ('+n+')' : '';
+      return '<button type="button" class="chip mode'+(state.tbUnit===u?' active':'')+'" data-unit="'+escapeHtml(u)+'">'+escapeHtml(u)+badge+'</button>';
     }).join("");
     Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
       chip.addEventListener("click", function(){
         state.tbUnit = chip.getAttribute("data-unit");
         renderTbUnitChips();
         renderTbLessonChips();
+        renderTbSelected();
         updateTbStatus();
       });
     });
@@ -1760,7 +1771,29 @@ var ADV_DATA = [
           var ls = cb.getAttribute("data-lesson");
           if(cb.checked) state.tbLessons.add(ls); else state.tbLessons.delete(ls);
         }
+        renderTbUnitChips();
         renderTbLessonChips();
+        renderTbSelected();
+        updateTbStatus();
+      });
+    });
+  }
+  function renderTbSelected(){
+    var group = document.getElementById("tb-selected-group");
+    var el = document.getElementById("tb-selected");
+    if(!group || !el) return;
+    var ordered = tbLessonList(state.tbTextbook, state.tbGrade).filter(function(ls){ return state.tbLessons.has(ls); });
+    if(ordered.length===0){ group.style.display = "none"; el.innerHTML = ""; return; }
+    group.style.display = "";
+    el.innerHTML = ordered.map(function(ls){
+      return '<button type="button" class="chip mode active" data-remove="'+escapeHtml(ls)+'">'+escapeHtml(ls)+' ✕</button>';
+    }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll(".chip"), function(chip){
+      chip.addEventListener("click", function(){
+        state.tbLessons.delete(chip.getAttribute("data-remove"));
+        renderTbUnitChips();
+        renderTbLessonChips();
+        renderTbSelected();
         updateTbStatus();
       });
     });
